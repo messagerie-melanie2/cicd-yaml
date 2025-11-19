@@ -1,0 +1,271 @@
+include: 
+  - local: "clean-log.yml"
+    rules:
+      - exists:
+          - clean-log.yml
+  - project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+    ref: ht-rework
+    file: ".default-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - .default-conf.yml
+          project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+          ref: ht-rework
+  - project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+    ref: ht-rework
+    file: ".${CI_PROJECT_NAME}-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - ".${CI_PROJECT_NAME}-conf.yml"
+          project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+          ref: ht-rework
+  - local: "trigger-project.yml"
+    rules:
+      - exists:
+          - trigger-project.yml
+
+workflow:
+  name: "$PIPELINE_DISPLAY_NAME"
+  rules:
+    # --------------------- 
+    # --- NAME PIPELINE ---
+    # ---------------------
+    - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web)/
+      variables:
+        PIPELINE_DISPLAY_NAME: "[$CI_PIPELINE_SOURCE] $CI_COMMIT_MESSAGE"
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      variables:
+        PIPELINE_DISPLAY_NAME: "[$CI_PROJECT_TRIGGER] $TRIGGER_DESCRIPTION"
+        CI_PROJECT_TRIGGER_CICD: $CI_PROJECT_TRIGGER
+        CI_BRANCH_TRIGGER_CICD: $CI_BRANCH_TRIGGER
+        CI_CHANGES_TRIGGER_CICD: $CI_CHANGES_TRIGGER
+        CI_COMMIT_DESCRIPTION: $TRIGGER_DESCRIPTION
+        CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
+        CI_TRIGGER_VARIABLES_CICD: $TRIGGER_VARIABLES
+
+    # ----------------------
+    # ---- COMMIT SETUP ----
+    # ----------------------
+    - if: $CI_COMMIT_MESSAGE =~ /.*ci-branch-dev.*/
+      variables:
+        CI_BRANCH_TO_PULL: dev
+    
+    - if: $CI_COMMIT_MESSAGE =~ /.*ci-debug.*/
+      variables:
+        CI_DEBUG: True
+
+    # ---------------------
+    # - PIPELINE TRIGGERS -
+    # ---------------------
+    # Always run on default branch (main, preprod)
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+    # Always run on production branch (prod)
+    - if: $CI_COMMIT_BRANCH == "prod"
+      when: always
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      when: always
+    # Avoid running if new branch (disable pipeline on a new branch create)
+    - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"
+      when: never
+    # Run in any other case
+    - when: always
+    # ---------------------
+
+default:
+  tags:
+    - $RUNNER_TAGS
+
+stages:
+  - prepare
+  - process
+  - convert
+  - execute
+  - deploy
+  - clean
+  - trigger
+
+# Get the required files using git
+#
+get-files-from-git:
+  stage: prepare
+  tags:
+    - $RUNNER_TAGS
+  # needs:
+  #
+  rules:
+    - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web|trigger)/
+      variables:
+        CI_COMMIT_BEFORE_SHA: ${CI_COMMIT_SHA}
+    - when : always
+  image: ruby:2.6
+  script:
+    - echo CI_PROJECT_ID - ${CI_PROJECT_ID}
+    - echo CI_COMMIT_MESSAGE - ${CI_COMMIT_MESSAGE}
+    - echo CI_COMMIT_DESCRIPTION - ${CI_COMMIT_DESCRIPTION}
+    - echo PIPELINE_DISPLAY_NAME - ${PIPELINE_DISPLAY_NAME}
+    - echo '-------------------'
+    - echo CI_MERGE_REQUEST_ID -- ${CI_MERGE_REQUEST_ID}
+    - echo CI_PIPELINE_SOURCE -- ${CI_PIPELINE_SOURCE}
+    - echo CI_PROJECT_NAME -- ${CI_PROJECT_NAME}
+    - echo CI_COMMIT_BRANCH -- ${CI_COMMIT_BRANCH}
+    - echo CI_COMMIT_TITLE -- ${CI_COMMIT_TITLE}
+    - echo CI_DEFAULT_BRANCH -- ${CI_DEFAULT_BRANCH}
+    - echo CI_REGISTRY -- ${CI_REGISTRY}
+    - echo CI_PROJECT_NAMESPACE -- ${CI_PROJECT_NAMESPACE}
+    - echo CI_PROJECT_NAME -- ${CI_PROJECT_NAME}
+    - echo CI_JOB_TOKEN -- ${CI_JOB_TOKEN}
+    - echo JENKINS_TOKEN -- ${JENKINS_TOKEN}
+    - echo CICD_GMCD_TOKEN -- ${CICD_GMCD_TOKEN}
+    - echo CI_COMMIT_BEFORE_SHA -- ${CI_COMMIT_BEFORE_SHA}
+    - echo CI_COMMIT_SHA -- ${CI_COMMIT_SHA}
+    - echo CI_COMMIT_REF_NAME -- ${CI_COMMIT_REF_NAME}
+    - echo CI_COMMIT_BRANCH -- ${CI_COMMIT_BRANCH}
+    - echo CI_COMMIT_REF_SLUG -- ${CI_COMMIT_REF_SLUG}
+    - echo '-------------------'
+    - echo RUNNER_TAGS -- ${RUNNER_TAGS}
+    - echo CI_RUNNER_TAGS -- ${CI_RUNNER_TAGS}
+    - echo '-------------------'
+    - echo NO_PROXY -- ${NO_PROXY}
+    - echo REGISTRY_MIRROR -- ${REGISTRY_MIRROR}
+    - echo '-------------------'
+    - echo TRIGGER_PAYLOAD -- $TRIGGER_PAYLOAD
+    - echo CI_PROJECT_TRIGGER -- $CI_PROJECT_TRIGGER
+    - echo CI_BRANCH_TO_PULL -- $CI_BRANCH_TO_PULL
+    - echo CI_DEBUG -- $CI_DEBUG
+
+    #
+    - git clone -b ${CI_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_SCRIPT_PATH}.git
+    - git diff --name-only ${CI_COMMIT_BEFORE_SHA} ${CI_COMMIT_SHA} >> ./${CHANGES_INFO}
+    - cat ./${CHANGES_INFO}
+    #
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-script/build-docker/
+
+# Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
+#
+.do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
+  - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
+    when: never
+  # always run in other cases (if previous job didn't fail)
+  - when: on_success
+
+# Uses the python script to fill the missing part of the Jsonnet file
+#
+fill-jsonnet-from-python:
+  stage: process
+  rules:
+    - *do-not-run-build-run-when-cleaning
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  #
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - python3 ${PYTHON_SCRIPT}
+      --debug-enabled ${CI_DEBUG}
+      --generate-jsonnet 
+      --generate-jsonnet-destination-file ${JSONNET_SRC} 
+      --generate-jsonnet-current-repo ${CI_PROJECT_NAME} 
+      --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH} 
+      --changes-info-file ${CHANGES_INFO} 
+      --project-id ${CI_PROJECT_ID} 
+      --token ${CICD_API_TOKEN} 
+      --trigger-project ${CI_PROJECT_TRIGGER_CICD} 
+      --trigger-branch ${CI_BRANCH_TRIGGER_CICD}
+      --trigger-changes "${CI_CHANGES_TRIGGER_CICD}"
+      --trigger-variables "${CI_TRIGGER_VARIABLES_CICD}"
+      --pipeline-source ${CI_PIPELINE_SOURCE}
+  #
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-script/
+
+# Translates the Jsonnet file into a YAML configuration file
+#
+convert-jsonnet-to-json:
+  stage: convert
+  rules:
+    - *do-not-run-build-run-when-cleaning
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - fill-jsonnet-from-python
+  #
+  image: 
+    name: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${JSONNET_FOLDER_PATH}:${JSONNET_FOLDER_TAG}
+  #
+  script:
+    - /entrypoint.sh
+  #
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-docker/pipelines_yaml/
+      - ./cicd-docker/script/
+
+# Uses the YAML configuration file to create and run jobs
+# 
+execute-jobs-from-yaml:
+  stage: execute
+  rules:
+    - *do-not-run-build-run-when-cleaning
+  needs:
+    - convert-jsonnet-to-json
+  #
+  # Force passing variables into child jobs
+  variables:
+    # Gitlab variables
+    CICD_SOURCE: "${CI_PIPELINE_SOURCE}"
+    CICD_COMMIT: "${CI_COMMIT_MESSAGE}"
+    TRIGGER_DESCRIPTION: "${TRIGGER_DESCRIPTION}"
+    RUNNER_TAGS: "${RUNNER_TAGS}"
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  #
+  trigger:
+    include:
+      - artifact: cicd-docker/pipelines_yaml/pipelines.yaml
+        job: convert-jsonnet-to-json
+    strategy: depend
+    forward:
+      pipeline_variables: true
+
+# Uses the python script to fill the missing part of the Jsonnet file
+#
+clean-registry-ghost-image:
+  stage: clean
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - python3 ${PYTHON_SCRIPT}
+      --delete-ghost-image
+      --debug-enabled ${CI_DEBUG}
+      --project-id ${CI_PROJECT_ID} 
+      --token ${CICD_API_TOKEN}
+
+clean-registry-dev-image:
+  stage: clean
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - python3 ${PYTHON_SCRIPT}
+      --delete-dev-image
+      --debug-enabled ${CI_DEBUG}
+      --project-id ${CI_PROJECT_ID} 
+      --token ${CICD_API_TOKEN}

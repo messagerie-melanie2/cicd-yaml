@@ -1,0 +1,142 @@
+include:
+  - local: "clean-log.yml"
+    rules:
+      - exists:
+          - clean-log.yml
+  - project: snum/detn/gmcd/cicd/cicd-configuration
+    ref: main
+    file: ".default-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - .default-conf.yml
+          project: snum/detn/gmcd/cicd/cicd-configuration
+          ref: main
+  - project: snum/detn/gmcd/cicd/cicd-configuration
+    ref: main
+    file: ".cicd-trigger-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - ".cicd-trigger-conf.yml"
+          project: snum/detn/gmcd/cicd/cicd-configuration
+          ref: main
+  - project: snum/detn/gmcd/cicd/cicd-configuration
+    ref: main
+    file: ".${CI_PROJECT_NAME}-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - ".${CI_PROJECT_NAME}-conf.yml"
+          project: snum/detn/gmcd/cicd/cicd-configuration
+          ref: main
+
+workflow:
+  name: "$PIPELINE_DISPLAY_NAME"
+  rules:
+    # ----------------------
+    # ---- COMMIT SETUP ----
+    # ----------------------
+    - if: $CI_COMMIT_MESSAGE =~ /.*ci-debug.*/
+      variables:
+        CI_DEBUG: True
+
+    # ---------------------
+    # ---------------------
+    # - PIPELINE TRIGGERS -
+    # ---------------------
+    - if: $CI_PIPELINE_SOURCE == "trigger"
+      variables:
+        PIPELINE_DISPLAY_NAME: "[$CI_PROJECT_TRIGGER] $TRIGGER_DESCRIPTION"
+        CI_PROJECT_TRIGGER_CICD: $CI_PROJECT_TRIGGER
+        CI_BRANCH_TRIGGER_CICD: $CI_BRANCH_TRIGGER
+        CI_CHANGES_TRIGGER_CICD: $CI_CHANGES_TRIGGER
+        CI_COMMIT_DESCRIPTION: $TRIGGER_DESCRIPTION
+        CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
+      when: always
+      
+    # Avoid running if new branch (disable pipeline on a new branch create)
+    - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && $CI_PIPELINE_SOURCE !~ /^(schedule|web)/
+      when: never
+    #Don't run if dev don't want to
+    - if: $CI_COMMIT_MESSAGE =~ /.*no-build.*/
+      when: never
+
+    - when: always
+    # ---------------------
+
+stages:
+  - prepare
+  - trigger
+  - clean
+
+# Get the required files using git
+#
+trigger-get-script:
+  stage: prepare
+  tags:
+    - $RUNNER_TAGS
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
+      when: never
+    - if: $JENKINS_TRIGGER_CONFIGURATION != null
+    - if: $GITLAB_TRIGGER_CONFIGURATION != null
+  image: ruby:2.6
+  script:
+    - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_TRIGGER_PATH}.git
+  retry: 2
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-trigger/
+
+trigger-gitlab:
+  stage: trigger
+  rules:
+    - if: $GITLAB_TRIGGER_CONFIGURATION == null
+      when: never
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
+      when: never
+    - when: always
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - trigger-get-script
+  image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - echo GITLAB_TRIGGER_CONFIGURATION -- $GITLAB_TRIGGER_CONFIGURATION
+
+    - python3 ${PYTHON_TRIGGER_SCRIPT}
+      --debug-enabled ${CI_DEBUG}
+      --token ${CI_JOB_TOKEN}
+      --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
+      --branch ${CI_COMMIT_BRANCH}
+      --description "${CI_COMMIT_MESSAGE}"
+      --commit-before-sha ${CI_COMMIT_BEFORE_SHA}
+      --commit-sha ${CI_COMMIT_SHA}
+      --config "${GITLAB_TRIGGER_CONFIGURATION}"
+      
+
+trigger-jenkins:
+  stage: trigger
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
+      when: never
+    - if: $JENKINS_TRIGGER_CONFIGURATION == null
+      when: never
+    - when: always
+  tags:
+    - $RUNNER_TAGS
+  image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  needs:
+    - trigger-get-script
+  script:
+    - echo JENKINS_TRIGGER_CONFIGURATION -- $JENKINS_TRIGGER_CONFIGURATION
+
+    - python3 ${PYTHON_TRIGGER_SCRIPT}
+      --debug-enabled ${CI_DEBUG}
+      --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
+      --branch ${CI_COMMIT_BRANCH}
+      --commit-before-sha ${CI_COMMIT_BEFORE_SHA}
+      --commit-sha ${CI_COMMIT_SHA}
+      --config "${JENKINS_TRIGGER_CONFIGURATION}"
