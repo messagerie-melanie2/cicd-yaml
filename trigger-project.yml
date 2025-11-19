@@ -14,20 +14,20 @@ include:
           ref: main
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: main
-    file: ".cicd-trigger-conf.yml"
+    file: "/trigger-project/.default-conf.yml"
     rules:
       - exists:
           paths:
-            - ".cicd-trigger-conf.yml"
+            - "/trigger-project/.default-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: main
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: main
-    file: ".${CI_PROJECT_NAME}-conf.yml"
+    file: "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
-            - ".${CI_PROJECT_NAME}-conf.yml"
+            - "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: main
 
