@@ -3,15 +3,15 @@ include:
     rules:
       - exists:
           - clean-log.yml
-  - project: snum/detn/gmcd/cicd/cicd-configuration
-    ref: main
-    file: ".default-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - .default-conf.yml
-          project: snum/detn/gmcd/cicd/cicd-configuration
-          ref: main
+  # - project: snum/detn/gmcd/cicd/cicd-configuration
+  #   ref: main
+  #   file: ".default-conf.yml"
+  #   rules:
+  #     - exists:
+  #         paths:
+  #           - .default-conf.yml
+  #         project: snum/detn/gmcd/cicd/cicd-configuration
+  #         ref: main
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: main
     file: "/trigger-project/.default-conf.yml"
