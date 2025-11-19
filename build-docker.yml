@@ -3,23 +3,23 @@ include:
     rules:
       - exists:
           - clean-log.yml
-  - project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
     file: ".default-conf.yml"
     rules:
       - exists:
           paths:
             - .default-conf.yml
-          project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
-  - project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
     file: ".${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
             - ".${CI_PROJECT_NAME}-conf.yml"
-          project: "${CI_PROJECT_NAMESPACE}/cicd-configuration"
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
   - local: "trigger-project.yml"
     rules:
