@@ -6,21 +6,21 @@ include:
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
     file: ".default-conf.yml"
-    # rules:
-    #   - exists:
-    #       paths:
-    #         - .default-conf.yml
-    #       project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
-    #       ref: ht-rework
+    rules:
+      - exists:
+          paths:
+            - .default-conf.yml
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          ref: ht-rework
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
     file: "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
-    # rules:
-    #   - exists:
-    #       paths:
-    #         - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
-    #       project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
-    #       ref: ht-rework
+    rules:
+      - exists:
+          paths:
+            - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          ref: ht-rework
   - local: "trigger-project.yml"
     rules:
       - exists:
@@ -172,7 +172,8 @@ fill-jsonnet-from-python:
       --generate-jsonnet 
       --generate-jsonnet-destination-file ${JSONNET_SRC} 
       --generate-jsonnet-current-repo ${CI_PROJECT_NAME} 
-      --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH} 
+      --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH}
+      --generate-jsonnet-pipeline-folder ${CI_PIPELINE_FOLDER_PATH}
       --changes-info-file ${CHANGES_INFO} 
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN} 
