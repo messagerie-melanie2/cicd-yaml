@@ -40,7 +40,7 @@ workflow:
     # ---------------------
     # ------ RUNNERS ------
     # ---------------------
-    - if: $BUILDER_RUNNER_TAGS != '' && $BUILDER_RUNNER_TAGS != $RUNNER_TAGS
+    - if: $BUILDER_RUNNER_TAGS != ''
       variables:
         RUNNER_TAGS: $BUILDER_RUNNER_TAGS
 

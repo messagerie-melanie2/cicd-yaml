@@ -101,7 +101,7 @@ trigger-gitlab:
     - $RUNNER_TAGS
   needs:
     - trigger-get-script
-  image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - echo GITLAB_TRIGGER_CONFIGURATION -- $GITLAB_TRIGGER_CONFIGURATION
 
@@ -126,7 +126,7 @@ trigger-jenkins:
     - when: always
   tags:
     - $RUNNER_TAGS
-  image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   needs:
     - trigger-get-script
   script:
