@@ -3,15 +3,15 @@ include:
     rules:
       - exists:
           - clean-log.yml
-  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
-    ref: ht-rework
-    file: ".default-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - .default-conf.yml
-          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
-          ref: ht-rework
+  # - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+  #   ref: ht-rework
+  #   file: ".default-conf.yml"
+  #   rules:
+  #     - exists:
+  #         paths:
+  #           - .default-conf.yml
+  #         project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+  #         ref: ht-rework
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
     file: "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
