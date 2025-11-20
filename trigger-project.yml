@@ -1,17 +1,4 @@
 include:
-  - local: "clean-log.yml"
-    rules:
-      - exists:
-          - clean-log.yml
-  # - project: snum/detn/gmcd/cicd/cicd-configuration
-  #   ref: main
-  #   file: ".default-conf.yml"
-  #   rules:
-  #     - exists:
-  #         paths:
-  #           - .default-conf.yml
-  #         project: snum/detn/gmcd/cicd/cicd-configuration
-  #         ref: main
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: ht-rework
     file: "/trigger-project/.default-conf.yml"
@@ -21,15 +8,21 @@ include:
             - "/trigger-project/.default-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
+      - exists:
+          paths:
+            - "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
+          project: snum/detn/gmcd/cicd/cicd-configuration
+          ref: ht-rework
+        when: never
   - project: snum/detn/gmcd/cicd/cicd-configuration
-    ref: main
+    ref: ht-rework
     file: "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
             - "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
-          ref: main
+          ref: ht-rework
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
@@ -75,7 +68,7 @@ stages:
 trigger-get-script:
   stage: prepare
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
@@ -99,7 +92,7 @@ trigger-gitlab:
       when: never
     - when: always
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   needs:
     - trigger-get-script
   image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
@@ -126,7 +119,7 @@ trigger-jenkins:
       when: never
     - when: always
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   needs:
     - trigger-get-script

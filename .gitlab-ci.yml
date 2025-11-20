@@ -16,6 +16,10 @@ include:
     rules:
       - exists:
           - build-docker.yml
+  - local: "trigger-project.yml"
+    rules:
+      - exists:
+          - trigger-project.yml
 stages:
   - prepare
   - process

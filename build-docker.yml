@@ -1,6 +1,21 @@
 include:
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
+    file: "/build-docker/.default-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - "/build-docker/.default-conf.yml"
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          ref: ht-rework
+      - exists:
+          paths:
+            - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
+          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          ref: ht-rework
+        when: never
+  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+    ref: ht-rework
     file: "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
@@ -8,10 +23,6 @@ include:
             - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
-  # - local: "trigger-project.yml"
-  #   rules:
-  #     - exists:
-  #         - trigger-project.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
@@ -31,7 +42,7 @@ workflow:
         CI_COMMIT_DESCRIPTION: $TRIGGER_DESCRIPTION
         CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
         CI_TRIGGER_VARIABLES_CICD: $TRIGGER_VARIABLES
-
+    
     # ----------------------
     # ---- COMMIT SETUP ----
     # ----------------------
@@ -63,7 +74,7 @@ workflow:
 
 default:
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
 
 stages:
   - prepare
@@ -79,7 +90,7 @@ stages:
 get-files-from-git:
   stage: prepare
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
   # needs:
   #
   rules:
@@ -148,7 +159,7 @@ fill-jsonnet-from-python:
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
   needs:
     - get-files-from-git
   #
@@ -182,7 +193,9 @@ convert-jsonnet-to-json:
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
+  variables:
+    RUNNER_TAGS: "${BUILDER_RUNNER_TAGS}"
   needs:
     - fill-jsonnet-from-python
   #
@@ -212,7 +225,7 @@ execute-jobs-from-yaml:
     CICD_SOURCE: "${CI_PIPELINE_SOURCE}"
     CICD_COMMIT: "${CI_COMMIT_MESSAGE}"
     TRIGGER_DESCRIPTION: "${TRIGGER_DESCRIPTION}"
-    RUNNER_TAGS: "${RUNNER_TAGS}"
+    RUNNER_TAGS: "${BUILDER_RUNNER_TAGS}"
     PARENT_PIPELINE_ID: $CI_PIPELINE_ID
   #
   trigger:
@@ -230,7 +243,7 @@ clean-registry-ghost-image:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
@@ -246,7 +259,7 @@ clean-registry-dev-image:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
   tags:
-    - $RUNNER_TAGS
+    - $BUILDER_RUNNER_TAGS
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
