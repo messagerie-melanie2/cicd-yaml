@@ -1,26 +1,26 @@
 include:
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: ht-rework
-    file: "/trigger-project/.default-conf.yml"
+    file: "trigger-project/.default-conf.yml"
     rules:
       - exists:
           paths:
-            - "/trigger-project/.default-conf.yml"
+            - "trigger-project/.default-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
       - exists:
           paths:
-            - "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
+            - "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
         when: never
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: ht-rework
-    file: "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
+    file: "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
-            - "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
+            - "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
 

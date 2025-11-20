@@ -1,26 +1,26 @@
 include:
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
-    file: "/build-docker/.default-conf.yml"
+    file: "build-docker/.default-conf.yml"
     rules:
       - exists:
           paths:
-            - "/build-docker/.default-conf.yml"
+            - "build-docker/.default-conf.yml"
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
       - exists:
           paths:
-            - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
+            - "build-docker/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
         when: never
   - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
     ref: ht-rework
-    file: "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
+    file: "build-docker/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
-            - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
+            - "build-docker/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
 
