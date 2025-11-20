@@ -208,8 +208,7 @@ convert-jsonnet-to-json:
   artifacts:
     expire_in: 6 hours
     paths:
-      - ./cicd-docker/pipelines_yaml/
-      - ./cicd-docker/script/
+      - ./cicd-script/
 
 # Uses the YAML configuration file to create and run jobs
 # 
@@ -231,7 +230,7 @@ execute-jobs-from-yaml:
   #
   trigger:
     include:
-      - artifact: cicd-docker/pipelines_yaml/pipelines.yaml
+      - artifact: "${CI_PIPELINE_YAML_FOLDER_PATH}/pipelines.yaml"
         job: convert-jsonnet-to-json
     strategy: depend
     forward:
