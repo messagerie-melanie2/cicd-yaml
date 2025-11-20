@@ -125,6 +125,7 @@ get-files-from-git:
     - echo CI_COMMIT_REF_SLUG -- ${CI_COMMIT_REF_SLUG}
     - echo '-------------------'
     - echo RUNNER_TAGS -- ${RUNNER_TAGS}
+    - echo BUILDER_RUNNER_TAGS -- ${BUILDER_RUNNER_TAGS}
     - echo CI_RUNNER_TAGS -- ${CI_RUNNER_TAGS}
     - echo '-------------------'
     - echo NO_PROXY -- ${NO_PROXY}
