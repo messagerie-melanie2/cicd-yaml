@@ -35,6 +35,12 @@ workflow:
         CI_DEBUG: True
 
     # ---------------------
+    # ------ RUNNERS ------
+    # ---------------------
+    - if: $BUILDER_RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != '' && $TRIGGER_RUNNER_TAGS != $RUNNER_TAGS
+      variables:
+        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
+
     # ---------------------
     # - PIPELINE TRIGGERS -
     # ---------------------
@@ -68,7 +74,7 @@ stages:
 trigger-get-script:
   stage: prepare
   tags:
-    - $TRIGGER_RUNNER_TAGS
+    - $RUNNER_TAGS
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
@@ -76,7 +82,7 @@ trigger-get-script:
     - if: $GITLAB_TRIGGER_CONFIGURATION != null
   image: ruby:2.6
   script:
-    - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_TRIGGER_PATH}.git
+    - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_TRIGGER_PATH}.git
   retry: 2
   artifacts:
     expire_in: 6 hours
@@ -92,7 +98,7 @@ trigger-gitlab:
       when: never
     - when: always
   tags:
-    - $TRIGGER_RUNNER_TAGS
+    - $RUNNER_TAGS
   needs:
     - trigger-get-script
   image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
@@ -119,7 +125,7 @@ trigger-jenkins:
       when: never
     - when: always
   tags:
-    - $TRIGGER_RUNNER_TAGS
+    - $RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   needs:
     - trigger-get-script

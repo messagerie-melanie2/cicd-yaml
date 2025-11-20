@@ -37,6 +37,13 @@ workflow:
         CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
         CI_TRIGGER_VARIABLES_CICD: $TRIGGER_VARIABLES
     
+    # ---------------------
+    # ------ RUNNERS ------
+    # ---------------------
+    - if: $BUILDER_RUNNER_TAGS != '' && $BUILDER_RUNNER_TAGS != $RUNNER_TAGS
+      variables:
+        RUNNER_TAGS: $BUILDER_RUNNER_TAGS
+
     # ----------------------
     # ---- COMMIT SETUP ----
     # ----------------------
@@ -68,7 +75,7 @@ workflow:
 
 default:
   tags:
-    - $BUILDER_RUNNER_TAGS
+    - $RUNNER_TAGS
 
 stages:
   - prepare
@@ -84,7 +91,7 @@ stages:
 get-files-from-git:
   stage: prepare
   tags:
-    - $BUILDER_RUNNER_TAGS
+    - $RUNNER_TAGS
   # needs:
   #
   rules:
@@ -153,7 +160,7 @@ fill-jsonnet-from-python:
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
-    - $BUILDER_RUNNER_TAGS
+    - $RUNNER_TAGS
   needs:
     - get-files-from-git
   #
@@ -187,9 +194,7 @@ convert-jsonnet-to-json:
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
-    - $BUILDER_RUNNER_TAGS
-  variables:
-    RUNNER_TAGS: "${BUILDER_RUNNER_TAGS}"
+    - $RUNNER_TAGS
   needs:
     - fill-jsonnet-from-python
   #
@@ -219,7 +224,7 @@ execute-jobs-from-yaml:
     CICD_SOURCE: "${CI_PIPELINE_SOURCE}"
     CICD_COMMIT: "${CI_COMMIT_MESSAGE}"
     TRIGGER_DESCRIPTION: "${TRIGGER_DESCRIPTION}"
-    RUNNER_TAGS: "${BUILDER_RUNNER_TAGS}"
+    RUNNER_TAGS: "${RUNNER_TAGS}"
     PARENT_PIPELINE_ID: $CI_PIPELINE_ID
   #
   trigger:
@@ -237,7 +242,7 @@ clean-registry-ghost-image:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
   tags:
-    - $BUILDER_RUNNER_TAGS
+    - $RUNNER_TAGS
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
@@ -253,7 +258,7 @@ clean-registry-dev-image:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
   tags:
-    - $BUILDER_RUNNER_TAGS
+    - $RUNNER_TAGS
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
