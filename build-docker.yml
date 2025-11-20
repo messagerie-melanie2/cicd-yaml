@@ -21,10 +21,10 @@ include:
             - "/build-docker/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
-  - local: "trigger-project.yml"
-    rules:
-      - exists:
-          - trigger-project.yml
+  # - local: "trigger-project.yml"
+  #   rules:
+  #     - exists:
+  #         - trigger-project.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"

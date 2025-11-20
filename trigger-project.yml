@@ -13,14 +13,14 @@ include:
   #         project: snum/detn/gmcd/cicd/cicd-configuration
   #         ref: main
   - project: snum/detn/gmcd/cicd/cicd-configuration
-    ref: main
+    ref: ht-rework
     file: "/trigger-project/.default-conf.yml"
     rules:
       - exists:
           paths:
             - "/trigger-project/.default-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
-          ref: main
+          ref: ht-rework
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: main
     file: "/trigger-project/.${CI_PROJECT_NAME}-conf.yml"
