@@ -85,12 +85,13 @@ trigger-get-script:
         RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
   image: ruby:2.6
   script:
-    - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_TRIGGER_PATH}.git
+    - echo $RUNNER_TAGS
+    - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_SCRIPT_PATH}.git
   retry: 2
   artifacts:
     expire_in: 6 hours
     paths:
-      - ./cicd-trigger/
+      - ./cicd-script/
 
 trigger-gitlab:
   stage: trigger
