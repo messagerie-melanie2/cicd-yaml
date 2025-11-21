@@ -35,13 +35,6 @@ workflow:
         CI_DEBUG: True
 
     # ---------------------
-    # ------ RUNNERS ------
-    # ---------------------
-    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
-      variables:
-        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
-
-    # ---------------------
     # - PIPELINE TRIGGERS -
     # ---------------------
     - if: $CI_PIPELINE_SOURCE == "trigger"
@@ -74,18 +67,14 @@ stages:
 trigger-get-script:
   stage: prepare
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - if: $JENKINS_TRIGGER_CONFIGURATION != null
     - if: $GITLAB_TRIGGER_CONFIGURATION != null
-    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
-      variables:
-        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
   image: ruby:2.6
   script:
-    - echo $RUNNER_TAGS
     - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_SCRIPT_PATH}.git
   retry: 2
   artifacts:
@@ -96,16 +85,13 @@ trigger-get-script:
 trigger-gitlab:
   stage: trigger
   rules:
-    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
-      variables:
-        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
     - if: $GITLAB_TRIGGER_CONFIGURATION == null
       when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - when: always
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   needs:
     - trigger-get-script
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
@@ -126,16 +112,13 @@ trigger-gitlab:
 trigger-jenkins:
   stage: trigger
   rules:
-    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
-      variables:
-        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - if: $JENKINS_TRIGGER_CONFIGURATION == null
       when: never
     - when: always
   tags:
-    - $RUNNER_TAGS
+    - $TRIGGER_RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   needs:
     - trigger-get-script
