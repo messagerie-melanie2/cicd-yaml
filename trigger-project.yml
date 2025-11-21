@@ -47,6 +47,13 @@ workflow:
     #Don't run if dev don't want to
     - if: $CI_COMMIT_MESSAGE =~ /.*no-build.*/
       when: never
+    
+    # ----------------------
+    # ---- COMMIT SETUP ----
+    # ----------------------
+    - if: $CI_COMMIT_MESSAGE =~ /.*ci-branch-dev.*/
+      variables:
+        CI_BRANCH_TO_PULL: dev
 
     - when: always
     # ---------------------
