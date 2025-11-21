@@ -37,7 +37,7 @@ workflow:
     # ---------------------
     # ------ RUNNERS ------
     # ---------------------
-    - if: $BUILDER_RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != '' && $TRIGGER_RUNNER_TAGS != $RUNNER_TAGS
+    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
       variables:
         RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
 
@@ -80,6 +80,9 @@ trigger-get-script:
       when: never
     - if: $JENKINS_TRIGGER_CONFIGURATION != null
     - if: $GITLAB_TRIGGER_CONFIGURATION != null
+    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
+      variables:
+        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
   image: ruby:2.6
   script:
     - git clone -b ${CI_TRIGGER_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_TRIGGER_PATH}.git
@@ -92,6 +95,9 @@ trigger-get-script:
 trigger-gitlab:
   stage: trigger
   rules:
+    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
+      variables:
+        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
     - if: $GITLAB_TRIGGER_CONFIGURATION == null
       when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
@@ -119,6 +125,9 @@ trigger-gitlab:
 trigger-jenkins:
   stage: trigger
   rules:
+    - if: $RUNNER_TAGS == '' && $TRIGGER_RUNNER_TAGS != ''
+      variables:
+        RUNNER_TAGS: $TRIGGER_RUNNER_TAGS
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - if: $JENKINS_TRIGGER_CONFIGURATION == null

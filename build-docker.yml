@@ -36,13 +36,6 @@ workflow:
         CI_COMMIT_DESCRIPTION: $TRIGGER_DESCRIPTION
         CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
         CI_TRIGGER_VARIABLES_CICD: $TRIGGER_VARIABLES
-    
-    # ---------------------
-    # ------ RUNNERS ------
-    # ---------------------
-    - if: $BUILDER_RUNNER_TAGS != ''
-      variables:
-        RUNNER_TAGS: $BUILDER_RUNNER_TAGS
 
     # ----------------------
     # ---- COMMIT SETUP ----
