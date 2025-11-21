@@ -8,12 +8,6 @@ include:
             - "trigger-project/.default-conf.yml"
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
-      - exists:
-          paths:
-            - "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
-          project: snum/detn/gmcd/cicd/cicd-configuration
-          ref: ht-rework
-        when: never
   - project: snum/detn/gmcd/cicd/cicd-configuration
     ref: ht-rework
     file: "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
