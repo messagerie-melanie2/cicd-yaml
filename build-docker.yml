@@ -60,7 +60,7 @@ fill-jsonnet-from-python:
   tags:
     - $RUNNER_TAGS
   needs:
-    - get-files-from-git
+    - get-changes-from-git
   #
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
