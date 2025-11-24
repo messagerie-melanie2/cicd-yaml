@@ -5,6 +5,7 @@ setup-trigger-project:
       when: never
     - if: $GITLAB_SETUP_MODE == no
       when: never
+    - when: always
   tags:
     - $RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}

@@ -81,6 +81,7 @@ default:
     - $RUNNER_TAGS
     
 stages:
+  - setup
   - prepare
   - process
   - convert
