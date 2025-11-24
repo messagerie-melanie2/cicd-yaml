@@ -18,70 +18,9 @@ include:
           project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
           ref: ht-rework
 
-workflow:
-  name: "$PIPELINE_DISPLAY_NAME"
-  rules:
-    # --------------------- 
-    # --- NAME PIPELINE ---
-    # ---------------------
-    - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web)/
-      variables:
-        PIPELINE_DISPLAY_NAME: "[$CI_PIPELINE_SOURCE] $CI_COMMIT_MESSAGE"
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      variables:
-        PIPELINE_DISPLAY_NAME: "[$CI_PROJECT_TRIGGER] $TRIGGER_DESCRIPTION"
-        CI_PROJECT_TRIGGER_CICD: $CI_PROJECT_TRIGGER
-        CI_BRANCH_TRIGGER_CICD: $CI_BRANCH_TRIGGER
-        CI_CHANGES_TRIGGER_CICD: $CI_CHANGES_TRIGGER
-        CI_COMMIT_DESCRIPTION: $TRIGGER_DESCRIPTION
-        CI_COMMIT_MESSAGE: $TRIGGER_DESCRIPTION
-        CI_TRIGGER_VARIABLES_CICD: $TRIGGER_VARIABLES
-
-    # ----------------------
-    # ---- COMMIT SETUP ----
-    # ----------------------
-    - if: $CI_COMMIT_MESSAGE =~ /.*ci-branch-dev.*/
-      variables:
-        CI_BRANCH_TO_PULL: dev
-    
-    - if: $CI_COMMIT_MESSAGE =~ /.*ci-debug.*/
-      variables:
-        CI_DEBUG: True
-
-    # ---------------------
-    # - PIPELINE TRIGGERS -
-    # ---------------------
-    # Always run on default branch (main, preprod)
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      when: always
-    # Always run on production branch (prod)
-    - if: $CI_COMMIT_BRANCH == "prod"
-      when: always
-    - if: $CI_PIPELINE_SOURCE == "trigger"
-      when: always
-    # Avoid running if new branch (disable pipeline on a new branch create)
-    - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"
-      when: never
-    # Run in any other case
-    - when: always
-    # ---------------------
-
-default:
-  tags:
-    - $RUNNER_TAGS
-
-stages:
-  - prepare
-  - process
-  - convert
-  - execute
-  - deploy
-  - clean
-  - trigger
-
 # Get the required files using git
 #
-get-files-from-git:
+get-changes-from-git:
   stage: prepare
   tags:
     - $RUNNER_TAGS
@@ -94,43 +33,6 @@ get-files-from-git:
     - when : always
   image: ruby:2.6
   script:
-    - echo CI_PROJECT_ID - ${CI_PROJECT_ID}
-    - echo CI_COMMIT_MESSAGE - ${CI_COMMIT_MESSAGE}
-    - echo CI_COMMIT_DESCRIPTION - ${CI_COMMIT_DESCRIPTION}
-    - echo PIPELINE_DISPLAY_NAME - ${PIPELINE_DISPLAY_NAME}
-    - echo '-------------------'
-    - echo CI_MERGE_REQUEST_ID -- ${CI_MERGE_REQUEST_ID}
-    - echo CI_PIPELINE_SOURCE -- ${CI_PIPELINE_SOURCE}
-    - echo CI_PROJECT_NAME -- ${CI_PROJECT_NAME}
-    - echo CI_COMMIT_BRANCH -- ${CI_COMMIT_BRANCH}
-    - echo CI_COMMIT_TITLE -- ${CI_COMMIT_TITLE}
-    - echo CI_DEFAULT_BRANCH -- ${CI_DEFAULT_BRANCH}
-    - echo CI_REGISTRY -- ${CI_REGISTRY}
-    - echo CI_PROJECT_NAMESPACE -- ${CI_PROJECT_NAMESPACE}
-    - echo CI_PROJECT_NAME -- ${CI_PROJECT_NAME}
-    - echo CI_JOB_TOKEN -- ${CI_JOB_TOKEN}
-    - echo JENKINS_TOKEN -- ${JENKINS_TOKEN}
-    - echo CICD_GMCD_TOKEN -- ${CICD_GMCD_TOKEN}
-    - echo CI_COMMIT_BEFORE_SHA -- ${CI_COMMIT_BEFORE_SHA}
-    - echo CI_COMMIT_SHA -- ${CI_COMMIT_SHA}
-    - echo CI_COMMIT_REF_NAME -- ${CI_COMMIT_REF_NAME}
-    - echo CI_COMMIT_BRANCH -- ${CI_COMMIT_BRANCH}
-    - echo CI_COMMIT_REF_SLUG -- ${CI_COMMIT_REF_SLUG}
-    - echo '-------------------'
-    - echo RUNNER_TAGS -- ${RUNNER_TAGS}
-    - echo BUILDER_RUNNER_TAGS -- ${BUILDER_RUNNER_TAGS}
-    - echo CI_RUNNER_TAGS -- ${CI_RUNNER_TAGS}
-    - echo '-------------------'
-    - echo NO_PROXY -- ${NO_PROXY}
-    - echo REGISTRY_MIRROR -- ${REGISTRY_MIRROR}
-    - echo '-------------------'
-    - echo TRIGGER_PAYLOAD -- $TRIGGER_PAYLOAD
-    - echo CI_PROJECT_TRIGGER -- $CI_PROJECT_TRIGGER
-    - echo CI_BRANCH_TO_PULL -- $CI_BRANCH_TO_PULL
-    - echo CI_DEBUG -- $CI_DEBUG
-
-    #
-    - git clone -b ${CI_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_SCRIPT_PATH}.git
     - git diff --name-only ${CI_COMMIT_BEFORE_SHA} ${CI_COMMIT_SHA} >> ./${CHANGES_INFO}
     - cat ./${CHANGES_INFO}
     #
@@ -228,37 +130,3 @@ execute-jobs-from-yaml:
     strategy: depend
     forward:
       pipeline_variables: true
-
-# Uses the python script to fill the missing part of the Jsonnet file
-#
-clean-registry-ghost-image:
-  stage: clean
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
-  tags:
-    - $RUNNER_TAGS
-  needs:
-    - get-files-from-git
-  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
-  script:
-    - python3 ${PYTHON_SCRIPT}
-      --delete-ghost-image
-      --debug-enabled ${CI_DEBUG}
-      --project-id ${CI_PROJECT_ID} 
-      --token ${CICD_API_TOKEN}
-
-clean-registry-dev-image:
-  stage: clean
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
-  tags:
-    - $RUNNER_TAGS
-  needs:
-    - get-files-from-git
-  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
-  script:
-    - python3 ${PYTHON_SCRIPT}
-      --delete-dev-image
-      --debug-enabled ${CI_DEBUG}
-      --project-id ${CI_PROJECT_ID} 
-      --token ${CICD_API_TOKEN}

@@ -1,0 +1,14 @@
+setup-trigger-project:
+  stage: setup
+  rules:
+    - if: $GITLAB_SETUP_MODE == null
+      when: never
+    - if: $GITLAB_SETUP_MODE == no
+      when: never
+  tags:
+    - $RUNNER_TAGS
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - python3 ${PYTHON_SETUP_PROJECT_SCRIPT}
+      --debug-enabled ${CI_DEBUG}
+    

@@ -1,29 +1,31 @@
-clean-job-rotation:
+clean-registry-ghost-image:
   stage: clean
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log-job-rotation/
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
   tags:
     - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_CLEAN_LOG_SCRIPT}
+    - python3 ${PYTHON_SCRIPT}
+      --delete-ghost-image
       --debug-enabled ${CI_DEBUG}
-      --clean-job-rotation
       --project-id ${CI_PROJECT_ID} 
-      --token ${CICD_GMCD_TOKEN}
-      --weeks-limit ${CI_LOG_WEEKS_LIMIT}
+      --token ${CICD_API_TOKEN}
 
-clean-all-job:
+clean-registry-dev-image:
   stage: clean
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log-all-job/
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
   tags:
     - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_CLEAN_LOG_SCRIPT}
+    - python3 ${PYTHON_SCRIPT}
+      --delete-dev-image
       --debug-enabled ${CI_DEBUG}
-      --clean-all
       --project-id ${CI_PROJECT_ID} 
-      --token ${CICD_GMCD_TOKEN}
-    
+      --token ${CICD_API_TOKEN}
