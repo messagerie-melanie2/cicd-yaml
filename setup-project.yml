@@ -3,8 +3,6 @@ setup-trigger-project:
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
-    - if: $GITLAB_SETUP_MODE == no
-      when: never
     - when: always
   tags:
     - $RUNNER_TAGS
