@@ -81,7 +81,6 @@ default:
     - $RUNNER_TAGS
     
 stages:
-  - setup
   - prepare
   - process
   - convert
@@ -89,6 +88,7 @@ stages:
   - deploy
   - clean
   - trigger
+  - setup
 
 # Get the required files using git
 #
