@@ -29,7 +29,7 @@ trigger-gitlab:
   tags:
     - $TRIGGER_RUNNER_TAGS
   needs:
-    - trigger-get-script
+    - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - echo GITLAB_TRIGGER_CONFIGURATION -- $GITLAB_TRIGGER_CONFIGURATION
@@ -57,7 +57,7 @@ trigger-jenkins:
     - $TRIGGER_RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   needs:
-    - trigger-get-script
+    - get-files-from-git
   script:
     - echo JENKINS_TRIGGER_CONFIGURATION -- $JENKINS_TRIGGER_CONFIGURATION
 
