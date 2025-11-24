@@ -1,21 +1,21 @@
 include:
-  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+  - project: "snum/detn/gmcd/cicd/cicd-configuration"
     ref: ht-rework
     file: "build-docker/.default-conf.yml"
     rules:
       - exists:
           paths:
             - "build-docker/.default-conf.yml"
-          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          project: "snum/detn/gmcd/cicd/cicd-configuration"
           ref: ht-rework
-  - project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+  - project: "snum/detn/gmcd/cicd/cicd-configuration"
     ref: ht-rework
     file: "build-docker/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
             - "build-docker/.${CI_PROJECT_NAME}-conf.yml"
-          project: "${CI_PROJECT_NAMESPACE}/cicd/cicd-configuration"
+          project: "snum/detn/gmcd/cicd/cicd-configuration"
           ref: ht-rework
 
 # Get the required files using git
