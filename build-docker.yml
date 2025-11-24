@@ -32,6 +32,8 @@ get-changes-from-git:
         CI_COMMIT_BEFORE_SHA: ${CI_COMMIT_SHA}
     - when : always
   image: ruby:2.6
+  needs:
+    - get-files-from-git
   script:
     - git diff --name-only ${CI_COMMIT_BEFORE_SHA} ${CI_COMMIT_SHA} >> ./${CHANGES_INFO}
     - cat ./${CHANGES_INFO}
