@@ -12,5 +12,4 @@ setup-trigger-project:
   script:
     - python3 ${PYTHON_SETUP_PROJECT_SCRIPT}
       --debug-enabled ${CI_DEBUG}
-      --token ${CICD_JENKINS_TOKEN}
     
