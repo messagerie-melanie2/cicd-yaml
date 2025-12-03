@@ -18,8 +18,8 @@ include:
           project: snum/detn/gmcd/cicd/cicd-configuration
           ref: ht-rework
 
-trigger:
-  stage: trigger-gitlab
+trigger-gitlab:
+  stage: trigger
   rules:
     - if: $GITLAB_TRIGGER_CONFIGURATION == null
       when: never
