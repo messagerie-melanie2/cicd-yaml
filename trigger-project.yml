@@ -1,21 +1,21 @@
 include:
-  - project: snum/detn/gmcd/cicd/cicd-configuration
+  - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-rework
     file: "trigger-project/.default-conf.yml"
     rules:
       - exists:
           paths:
             - "trigger-project/.default-conf.yml"
-          project: snum/detn/gmcd/cicd/cicd-configuration
+          project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
-  - project: snum/detn/gmcd/cicd/cicd-configuration
+  - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-rework
     file: "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
             - "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
-          project: snum/detn/gmcd/cicd/cicd-configuration
+          project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
 
 trigger-gitlab:

@@ -2,12 +2,12 @@ include:
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-rework
     file: ".default-conf.yml"
-    # rules:
-    #   - exists:
-    #       paths:
-    #         - .default-conf.yml
-    #       project: "${CICD_CONFIGURATION_PATH}"
-    #       ref: ht-rework
+    rules:
+      - exists:
+          paths:
+            - .default-conf.yml
+          project: "${CICD_CONFIGURATION_PATH}"
+          ref: ht-rework
   - local: "clean-log.yml"
     rules:
       - exists:
