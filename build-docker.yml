@@ -27,6 +27,8 @@ get-changes-from-git:
   # needs:
   #
   rules:
+    - if: $ENABLE_BUILD != 'yes'
+      when: never
     - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web|trigger)/
       variables:
         CI_COMMIT_BEFORE_SHA: ${CI_COMMIT_SHA}
@@ -46,6 +48,8 @@ get-changes-from-git:
 # Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
 #
 .do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
+  - if: $ENABLE_BUILD != 'yes'
+    when: never
   - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
     when: never
   # always run in other cases (if previous job didn't fail)

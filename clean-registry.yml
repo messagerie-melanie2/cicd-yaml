@@ -1,6 +1,8 @@
 clean-registry-ghost-image:
   stage: clean
   rules:
+    - if: $ENABLE_BUILD != 'yes'
+      when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
   tags:
     - $RUNNER_TAGS
@@ -17,6 +19,8 @@ clean-registry-ghost-image:
 clean-registry-dev-image:
   stage: clean
   rules:
+    - if: $ENABLE_BUILD != 'yes'
+      when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
   tags:
     - $RUNNER_TAGS
