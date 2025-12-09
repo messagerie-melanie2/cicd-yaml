@@ -10,6 +10,7 @@ setup-trigger-project:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_SETUP_PROJECT_SCRIPT}
+    - cd cicd-script
+    - python3 -m setup.main
       --setup-trigger
     
