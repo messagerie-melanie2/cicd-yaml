@@ -18,10 +18,10 @@ include:
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
 
-trigger-gitlab:
+trigger:
   stage: trigger
   rules:
-    - if: $GITLAB_TRIGGER_CONFIGURATION == null
+    - if: $TRIGGER_CONFIGURATION == null
       when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
@@ -32,9 +32,9 @@ trigger-gitlab:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - echo GITLAB_TRIGGER_CONFIGURATION -- $GITLAB_TRIGGER_CONFIGURATION
-
-    - python3 ${PYTHON_TRIGGER_SCRIPT}
+    - echo TRIGGER_CONFIGURATION -- $TRIGGER_CONFIGURATION
+    - cd cicd-script
+    - python3 trigger.trigger
       --debug-enabled ${CI_DEBUG}
       --token ${CI_JOB_TOKEN}
       --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
@@ -42,29 +42,3 @@ trigger-gitlab:
       --description "${CI_COMMIT_MESSAGE}"
       --commit-before-sha ${CI_COMMIT_BEFORE_SHA}
       --commit-sha ${CI_COMMIT_SHA}
-      --config "${GITLAB_TRIGGER_CONFIGURATION}"
-      
-
-trigger-jenkins:
-  stage: trigger
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
-      when: never
-    - if: $JENKINS_TRIGGER_CONFIGURATION == null
-      when: never
-    - when: always
-  tags:
-    - $TRIGGER_RUNNER_TAGS
-  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
-  needs:
-    - get-files-from-git
-  script:
-    - echo JENKINS_TRIGGER_CONFIGURATION -- $JENKINS_TRIGGER_CONFIGURATION
-
-    - python3 ${PYTHON_TRIGGER_SCRIPT}
-      --debug-enabled ${CI_DEBUG}
-      --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-      --branch ${CI_COMMIT_BRANCH}
-      --commit-before-sha ${CI_COMMIT_BEFORE_SHA}
-      --commit-sha ${CI_COMMIT_SHA}
-      --config "${JENKINS_TRIGGER_CONFIGURATION}"
