@@ -34,7 +34,7 @@ trigger:
   script:
     - echo TRIGGER_CONFIGURATION -- $TRIGGER_CONFIGURATION
     - cd cicd-script
-    - python3 trigger.trigger
+    - python3 -m trigger.trigger
       --debug-enabled ${CI_DEBUG}
       --token ${CI_JOB_TOKEN}
       --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
