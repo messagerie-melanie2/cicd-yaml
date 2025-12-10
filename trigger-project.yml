@@ -33,8 +33,8 @@ trigger:
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - echo TRIGGER_CONFIGURATION -- $TRIGGER_CONFIGURATION
-    - cd cicd-script
-    - python3 -m trigger.trigger
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_TRIGGER_SCRIPT_PACKAGE}
       --token ${CI_JOB_TOKEN}
       --project ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
       --branch ${CI_COMMIT_BRANCH}

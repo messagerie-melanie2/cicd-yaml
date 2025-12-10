@@ -10,7 +10,23 @@ setup-trigger-project:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - cd cicd-script
-    - python3 -m setup.main
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_SETUP_SCRIPT_PACKAGE}
       --setup-trigger
+
+setup-build-project:
+  stage: setup
+  rules:
+    - if: $GITLAB_SETUP_MODE == null
+      when: never
+    - when: always
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_SETUP_SCRIPT_PACKAGE}
+      --setup-build
     
