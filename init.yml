@@ -1,0 +1,70 @@
+python-process-init:
+  stage: build-init
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  rules:
+    - if: $INIT_BUILD != 'yes'
+      when: never
+  variables:
+    NAME: "python-process"
+    VERSION: "${INIT_BUILD_PYTHON_PROCESS_VERSION}"
+    PARENT_VERSION: "${INIT_BUILD_PYTHON_PROCESS_PARENT_VERSION}"
+    BUILD_PATH: "${INIT_BUILD_PYTHON_PROCESS_BUILD_PATH}"
+    BUILD_BRANCH: ""
+    TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
+    OTHER_KANIKO_ARGS: ""
+  image:
+    name: "${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG}"
+    entrypoint: [""]
+  before_script:
+    - 'source $BEFORE_SCRIPT_PATH'
+  script:
+    - 'echo $RUNNER_TAGS'
+    #
+    # Log which image we are building
+    #
+    - 'echo Building docker image ${NAME} of stage build-init --parent-version : ${PARENT_VERSION} -- path : ${BUILD_PATH} -- version : ${VERSION}.'
+    #
+    # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
+    # Kaniko Builder Entrypoint
+    - '$KBE'
+  retry:
+    max: 2,
+    when: ['script_failure']
+
+jsonnet-folder-init:
+  stage: build-init
+  tags:
+    - $RUNNER_TAGS
+  rules:
+    - if: $INIT_BUILD != 'yes'
+      when: never
+  needs:
+    - get-files-from-git
+  variables:
+    NAME: "jsonnet-folder"
+    VERSION: "${INIT_BUILD_JSONNET_FOLDER_VERSION}"
+    PARENT_VERSION: "${INIT_BUILD_JSONNET_FOLDER_PARENT_VERSION}"
+    BUILD_PATH: "${INIT_BUILD_JSONNET_FOLDER_BUILD_PATH}"
+    BUILD_BRANCH: ""
+    TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
+  image:
+    name: "${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG}"
+    entrypoint: [""]
+  before_script:
+    - 'source $BEFORE_SCRIPT_PATH'
+  script:
+    - 'echo $RUNNER_TAGS'
+    #
+    # Log which image we are building
+    #
+    - 'echo Building docker image ${NAME} of stage build-init --parent-version : ${PARENT_VERSION} -- path : ${BUILD_PATH} -- version : ${VERSION}.'
+    #
+    # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
+    # Kaniko Builder Entrypoint
+    - '$KBE'
+  retry:
+    max: 2,
+    when: ['script_failure']

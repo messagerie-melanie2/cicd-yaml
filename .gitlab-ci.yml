@@ -8,6 +8,10 @@ include:
             - .default-conf.yml
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
+  - local: "init.yml"
+    rules:
+      - exists:
+          - init.yml
   - local: "clean-log.yml"
     rules:
       - exists:
