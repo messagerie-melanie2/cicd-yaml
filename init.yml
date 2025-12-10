@@ -5,8 +5,9 @@ python-process-init:
   needs:
     - get-files-from-git
   rules:
-    - if: $INIT != 'yes'
-      when: never
+    - if: $INIT == 'yes'
+      when: always
+    - when : never
   variables:
     NAME: "python-process"
     VERSION: "${INIT_PYTHON_PROCESS_VERSION}"
@@ -39,8 +40,9 @@ jsonnet-folder-init:
   tags:
     - $RUNNER_TAGS
   rules:
-    - if: $INIT != 'yes'
-      when: never
+    - if: $INIT == 'yes'
+      when: always
+    - when : never
   needs:
     - get-files-from-git
   variables:
