@@ -5,13 +5,13 @@ python-process-init:
   needs:
     - get-files-from-git
   rules:
-    - if: $INIT_BUILD != 'yes'
+    - if: $INIT != 'yes'
       when: never
   variables:
     NAME: "python-process"
-    VERSION: "${INIT_BUILD_PYTHON_PROCESS_VERSION}"
-    PARENT_VERSION: "${INIT_BUILD_PYTHON_PROCESS_PARENT_VERSION}"
-    BUILD_PATH: "${INIT_BUILD_PYTHON_PROCESS_BUILD_PATH}"
+    VERSION: "${INIT_PYTHON_PROCESS_VERSION}"
+    PARENT_VERSION: "${INIT_PYTHON_PROCESS_PARENT_VERSION}"
+    BUILD_PATH: "${INIT_PYTHON_PROCESS_BUILD_PATH}"
     BUILD_BRANCH: ""
     TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
     OTHER_KANIKO_ARGS: ""
@@ -39,15 +39,15 @@ jsonnet-folder-init:
   tags:
     - $RUNNER_TAGS
   rules:
-    - if: $INIT_BUILD != 'yes'
+    - if: $INIT != 'yes'
       when: never
   needs:
     - get-files-from-git
   variables:
     NAME: "jsonnet-folder"
-    VERSION: "${INIT_BUILD_JSONNET_FOLDER_VERSION}"
-    PARENT_VERSION: "${INIT_BUILD_JSONNET_FOLDER_PARENT_VERSION}"
-    BUILD_PATH: "${INIT_BUILD_JSONNET_FOLDER_BUILD_PATH}"
+    VERSION: "${INIT_JSONNET_FOLDER_VERSION}"
+    PARENT_VERSION: "${INIT_JSONNET_FOLDER_PARENT_VERSION}"
+    BUILD_PATH: "${INIT_JSONNET_FOLDER_BUILD_PATH}"
     BUILD_BRANCH: ""
     TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
   image:
