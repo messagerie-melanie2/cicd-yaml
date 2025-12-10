@@ -141,7 +141,7 @@ get-files-from-git:
     - echo CI_DEBUG -- $CI_DEBUG
 
     #
-    - git clone -b ${CI_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_SCRIPT_PATH}.git
+    - git clone -b ${CI_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_REPO_SCRIPT_PATH}.git
     - git diff --name-only ${CI_COMMIT_BEFORE_SHA} ${CI_COMMIT_SHA} >> ./${CHANGES_INFO}
     - cat ./${CHANGES_INFO}
     #
