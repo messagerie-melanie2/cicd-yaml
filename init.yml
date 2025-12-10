@@ -31,7 +31,7 @@ python-process-init:
     # Kaniko Builder Entrypoint
     - '$KBE'
   retry:
-    max: 2,
+    max: 2
     when: ['script_failure']
 
 jsonnet-folder-init:
@@ -66,5 +66,5 @@ jsonnet-folder-init:
     # Kaniko Builder Entrypoint
     - '$KBE'
   retry:
-    max: 2,
+    max: 2
     when: ['script_failure']
