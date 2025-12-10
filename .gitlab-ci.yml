@@ -93,6 +93,7 @@ stages:
   - clean
   - trigger
   - setup
+  - build-init
 
 # Get the required files using git
 #
