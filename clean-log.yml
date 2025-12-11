@@ -6,24 +6,8 @@ clean-job-rotation:
     - $RUNNER_TAGS
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_CLEAN_LOG_SCRIPT}
-      --debug-enabled ${CI_DEBUG}
-      --clean-job-rotation
-      --project-id ${CI_PROJECT_ID} 
-      --token ${CICD_GMCD_TOKEN}
-      --weeks-limit ${CI_LOG_WEEKS_LIMIT}
-
-clean-all-job:
-  stage: clean
-  rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log-all-job/
-  tags:
-    - $RUNNER_TAGS
-  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
-  script:
-    - python3 ${PYTHON_CLEAN_LOG_SCRIPT}
-      --debug-enabled ${CI_DEBUG}
-      --clean-all
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_CLEAN_LOG_SCRIPT}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_GMCD_TOKEN}
     
