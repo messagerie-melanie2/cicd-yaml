@@ -1,9 +1,11 @@
-clean-job-rotation:
+clean-job:
   stage: clean
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log-job-rotation/
   tags:
     - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - cd ${CICD_SCRIPT_FOLDER}
