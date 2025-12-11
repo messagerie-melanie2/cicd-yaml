@@ -29,6 +29,8 @@ get-changes-from-git:
   rules:
     - if: $ENABLE_BUILD != 'yes'
       when: never
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
+      when: never
     - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web|trigger)/
       variables:
         CI_COMMIT_BEFORE_SHA: ${CI_COMMIT_SHA}
