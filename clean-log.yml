@@ -1,7 +1,7 @@
 clean-job:
   stage: clean
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log-job-rotation/
+    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log/
   tags:
     - $RUNNER_TAGS
   needs:
