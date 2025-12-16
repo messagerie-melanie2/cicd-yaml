@@ -1,93 +1,212 @@
-# cicd-yaml
+# GitLab CI Pipeline Présentation
 
+Ce projet utilise une **pipeline GitLab CI/CD modulaire**, organisée autour d'un fichier parent `.gitlab-ci.yml` qui inclut plusieurs blocs YAML spécifiques à chaque fonctionnalité.
 
+---
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Structure générale
 
 ```
-cd existing_repo
-git remote add origin https://gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-yaml.git
-git branch -M main
-git push -uf origin main
+.gitlab-ci.yml           # Fichier parent principal
+ci/
+├── init.yml             # Bloc pour l'initialisation de cicd-yaml
+├── build-docker.yml     # Bloc pour la construction des images Docker
+├── trigger-project.yml  # Bloc pour le trigger inter-projets
+├── setup-project.yml    # Bloc pour la configuration des projets
+├── clean-log.yml        # Bloc pour le nettoyage des logs gitlab
+├── clean-registry.yml   # Bloc pour le nettoyage des images Docker
 ```
 
-## Integrate with your tools
+### Fichier parent `.gitlab-ci.yml`
 
-- [ ] [Set up project integrations](https://gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-yaml/-/settings/integrations)
+Le fichier parent est responsable de :
 
-## Collaborate with your team
+* Inclure les blocs YAML spécifiques pour chaque feature via `include`
+* Definir le workflow général de la pipeline (changement de variables en fonction du type de lancement, création d'argument générique qu'on peut mettre en message de commit etc..)
+* Définir un tag par défaut pour les runners gitlab.
+* Définir les **stages** globaux de la pipeline (`prepare`, `process`, `deploy`, etc.)
+* Définir le stage en commun entre toutes les features, la récupération du projet de script cicd-script :
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+```yaml
+include:
+  [...]
+  - local: "features/build-docker.yml"
+    rules:
+      - exists:
+          - features/build-docker.yml
+  [...]
 
-## Test and Deploy
+workflow:
+  name: "$PIPELINE_DISPLAY_NAME"
+  rules:
+    # --------------------- 
+    # --- NAME PIPELINE ---
+    # ---------------------
+    - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web)/
+      variables:
+        PIPELINE_DISPLAY_NAME: "[$CI_PIPELINE_SOURCE] $CI_COMMIT_MESSAGE"
+    [...]
 
-Use the built-in continuous integration in GitLab.
+default:
+  tags:
+    - $RUNNER_TAGS
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+stages:
+  - prepare
+  - process
+  - deploy
+  [...]
 
-***
+get-files-from-git:
+  stage: prepare
+  [...]
+```
 
-# Editing this README
+### Blocs YAML modulaires
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Chaque fichier inclus contient uniquement la configuration nécessaire à une fonctionnalité particulière :
 
-## Suggestions for a good README
+* **init.yml** : Initialisation des images python-process et jsonnet-folder pour pouvoir lancer les différentes features.
+* **build-docker.yml** : Construction des images Docker, push vers le registry et deploiement dans l'infra.
+* **trigger-project.yml** : Trigger d'un projet vers un autre projet Gitlab ou tout autre webhooks (ex: Jenkins).
+* **setup-project.yml** : Configuration des projets pour permettre les différentes features (Build et Trigger).
+* **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab.
+* **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab.
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Arguments spécifiques
 
-## Name
-Choose a self-explaining name for your project.
+Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un (ou plusieurs) des arguments listés ci-dessous, le comportement de la pipeline associée est modifié.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+| Objectif          | Argument                  | Comportement associé |
+|-------------------|---------------------------|----------------------|
+| Reconstruction    | `ci-all`                  | Reconstruction de toutes les images, que les fichiers associés à ces images aient été modifiés ou non                                                                                 |
+| Reconstruction    | `ci-check-before-push`    | Push de l'image vers la registry seulement si des différences entre l'image construite par la pipeline et l'image déjà stockée sur la registry sont constatées                        |
+| Reconstruction    | `ci-branch-dev`    | Lance la reconstruction sur la pipeline de développement |
+| Nettoyage         | `ci-clean-dev`            | Lancement du module clean-registry mode suppression image dev|
+| Nettoyage         | `ci-clean-nobuild`        | Lancement du module clean-registry mode suppression image no build|
+| Nettoyage         | `ci-clean-log`        | Lancement du module clean-log |
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+#### Exemples
+- `ci-all && ci-check-before-push` pour forcer la reconstruction de toutes les images, sans les push si c'est inutile
+- `ci-clean-nobuild && ci-clean-dev` pour nettoyer les anciennes versions, et les version de dev obselète.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Build-docker module
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+#### Lancement
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+Le module se déclenche à chaque push/merge d'un utilisateur sauf pour la création d'une nouvelle branche dans un projet configuré au préalable par le module de setup.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+#### Etapes
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+La pipeline principale est séparé en 3 étapes : `process`, `convert`, `execute`. 
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+La première étape `process` suit l'étape `prepare` et lance le script python correspondant qui va récuperer les informations de toutes les images docker présente dans le repo où la pipeline est lancée grâce à l'architecture général. Chaque image docker aura son parent associé (via le dernier FROM du Dockerfile) permettant de faire le lien entre chacun. Ces derniers seront séparés par couches (df0, df1 ...) où plus on est dans une couche supérieur (df1 > df0 ) et plus on a de parents. Enfin, le script crée un nouveau .jsonnet qui va permettre d'automatiquement crée un nouveau .yaml avec toutes les informations nécessaire. Si ci-all est dans le message du commit, la conversion se fera en plusieurs jsonnet pour éviter d'avoir trop de build pour une seule sous-pipeline.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+La deuxième étape `convert` suit l'étape `process` convertit le .jsonnet en .yaml et le stock.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+La troisième étape `execute` suit l'étape `convert` et lance le nouveau .yaml en tant que pipeline enfant. Ce pipeline est une succession de build des couches df0 à dfn avec n le nombre de couche au total. Dans le cas où toutes les images sont builds (schedule), chacune des images devra attendre que le build de son parent reussisse avant de se lancer et, dans le cas contraire, le build ne se passera pas. Dans le cas où seul l'image modifié doit être build, les builds d'elle et ses enfants seront lancés (Si l'image parent non build n'existe pas dans le registry, l'image preprod sera récupéré à la place). L'image est ensuite push dans la registry et un job peut suivre celui du build qui déclenche le déploiement.
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+#### Schémas explicatif
 
-## License
-For open source projects, say how it is licensed.
+##### Pipeline principale
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+```mermaid
+flowchart LR
+    subgraph Process ["Stage process"]
+        direction LR
+
+        A[Get all Dockerfile information]
+        B[Create tree structure]
+        C[Generate jsonnet]
+
+        A --> B
+        B --> C
+    end
+
+    subgraph Convert ["Stage convert"]
+        direction LR
+        D[Convert jsonnet to json]
+    end
+
+    subgraph Execute ["Stage Execute"]
+        direction LR
+        E[Read pipeline json]
+    end
+
+    Process --> Convert
+    Convert --> Execute
+```
+
+##### Sous pipelines
+
+```mermaid
+flowchart LR
+    subgraph Normal ["Normal subpipeline"]
+        direction LR
+        subgraph DFN ["Stage dfn"]
+            direction TB
+            A[Build Dockerfile modified]
+        end
+
+        subgraph DFN1 ["Stage df n+1"]
+            direction TB
+            B[Build child 1]
+            BD[Deploy child 1]
+            C[Build child n]
+            CD[Deploy child n]
+
+            direction LR
+            B --> BD
+            C --> CD
+        end
+
+        DFN --> DFN1
+
+        subgraph DFN2 ["Stage df n+2"]
+            direction LR
+            D[Build child of child 1]
+            DD[Deploy child of child 1]
+
+            D --> DD
+        end
+
+        DFN1 --> DFN2
+    end
+```
+
+```mermaid
+flowchart
+    subgraph Schedule ["Schedule subpipeline"]
+        direction LR
+        subgraph Artifact ["Stage artifact"]
+            direction TB
+            A[Get artifacts]
+        end
+
+        subgraph Launch ["Launch pipeline"]
+            direction TB
+            B[Normal Subpipeline folder 1]
+            C[Normal Subpipeline folder n]
+        end
+
+        A --> B
+        A --> C
+    end
+```
+
+---
+
+## Avantages de cette approche
+
+* **Lisibilité** : Chaque bloc est autonome et facile à comprendre.
+* **Réutilisabilité** : Les blocs peuvent être inclus dans d’autres pipelines.
+* **Maintenance simplifiée** : Modification d’une feature sans toucher au reste de la pipeline.
+* **Scalabilité** : Ajout facile de nouvelles fonctionnalités CI/CD en créant simplement un nouveau bloc YAML.
+
+---
+
+## Bonnes pratiques
+
+* Nommer les fichiers YAML de manière claire (`build-*.yml`, `clean-*.yml`).
+* Garder les jobs modulaires et indépendants.
+* Documenter chaque bloc YAML avec un commentaire sur son rôle.

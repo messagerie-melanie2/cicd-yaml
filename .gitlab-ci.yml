@@ -8,30 +8,30 @@ include:
             - .default-conf.yml
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
-  - local: "init.yml"
+  - local: "features/init.yml"
     rules:
       - exists:
-          - init.yml
-  - local: "clean-log.yml"
+          - features/init.yml
+  - local: "features/clean-log.yml"
     rules:
       - exists:
-          - clean-log.yml
-  - local: "clean-registry.yml"
+          - features/clean-log.yml
+  - local: "features/clean-registry.yml"
     rules:
       - exists:
-          - clean-registry.yml
-  - local: "build-docker.yml"
+          - features/clean-registry.yml
+  - local: "features/build-docker.yml"
     rules:
       - exists:
-          - build-docker.yml
-  - local: "trigger-project.yml"
+          - features/build-docker.yml
+  - local: "features/trigger-project.yml"
     rules:
       - exists:
-          - trigger-project.yml
-  - local: "setup-project.yml"
+          - features/trigger-project.yml
+  - local: "features/setup-project.yml"
     rules:
       - exists:
-          - setup-project.yml
+          - features/setup-project.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
