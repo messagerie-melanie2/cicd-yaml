@@ -94,7 +94,7 @@ Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un
 
 #### Lancement
 
-Le module se déclenche à chaque push/merge d'un utilisateur sauf pour la création d'une nouvelle branche dans un projet configuré au préalable par le module de setup.
+Le module se déclenche à chaque push/merge d'un utilisateur sauf pour la création d'une nouvelle branche dans un projet configuré au préalable par le module de setup (ENABLE_BUILD = 'yes').
 
 #### Etapes
 
