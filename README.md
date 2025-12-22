@@ -73,15 +73,25 @@ Chaque fichier inclus contient uniquement la configuration nécessaire à une fo
 * **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab.
 * **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab.
 
+### Guide d'installation
+
+Pour pouvoir utiliser tout type de modules, il faudra au préalable faire les étapes suivantes :
+
+1) Récupérer l'image docker `gcr.io/kaniko-project/executor:v1.19.2-debug` et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/kaniko-executor:v1.19.2-debug`.
+2) Builder en local l'image dans cicd-docker/reg-image-builder/2.0/Dockerfile et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/reg-image-builder:2.0-prod`. 
+3) Crée la CI variable `CICD_CONFIGURATION_PATH` dans le projet cicd-docker avec comme value le path du projet cicd-configuration `cicd/cicd-configuration`.
+4) Lancer une pipeline avec comme variable d'environnement `INIT=yes` pour lancer la construction des images python-process et jsonnet-folder. 
+
 ### Arguments spécifiques
 
 Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un (ou plusieurs) des arguments listés ci-dessous, le comportement de la pipeline associée est modifié.
 
 | Objectif          | Argument                  | Comportement associé |
 |-------------------|---------------------------|----------------------|
-| Reconstruction    | `ci-all`                  | Reconstruction de toutes les images, que les fichiers associés à ces images aient été modifiés ou non                                                                                 |
-| Reconstruction    | `ci-check-before-push`    | Push de l'image vers la registry seulement si des différences entre l'image construite par la pipeline et l'image déjà stockée sur la registry sont constatées                        |
-| Reconstruction    | `ci-branch-dev`    | Lance la reconstruction sur la pipeline de développement |
+| Opérationnel      | `no-build`                | Ne lance pas de pipeline associé au push |
+| Reconstruction    | `ci-all`                  | Reconstruction de toutes les images, que les fichiers associés à ces images aient été modifiés ou non|
+| Reconstruction    | `ci-check-before-push`    | Push de l'image vers la registry seulement si des différences entre l'image construite par la pipeline et l'image déjà stockée sur la registry sont constatées|
+| Reconstruction    | `ci-branch-dev`    | Lance la reconstruction sur la pipeline de développement|
 | Nettoyage         | `ci-clean-dev`            | Lancement du module clean-registry mode suppression image dev|
 | Nettoyage         | `ci-clean-nobuild`        | Lancement du module clean-registry mode suppression image no build|
 | Nettoyage         | `ci-clean-log`        | Lancement du module clean-log |
