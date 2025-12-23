@@ -40,5 +40,3 @@ trigger:
       --branch ${CI_COMMIT_BRANCH}
       --description "${CI_COMMIT_MESSAGE}"
       --changes-info-file ${CHANGES_INFO}
-      --commit-before-sha ${CI_COMMIT_BEFORE_SHA}
-      --commit-sha ${CI_COMMIT_SHA}
