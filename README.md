@@ -79,7 +79,7 @@ Pour pouvoir utiliser tout type de modules, il faudra au préalable faire les é
 
 1) Récupérer l'image docker `gcr.io/kaniko-project/executor:v1.19.2-debug` et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/kaniko-executor:v1.19.2-debug`.
 2) Builder en local l'image dans cicd-docker/reg-image-builder/2.0/Dockerfile et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/reg-image-builder:2.0-prod`. 
-3) Crée la CI variable `CICD_CONFIGURATION_PATH` dans le projet cicd-docker avec comme value le path du projet cicd-configuration `cicd/cicd-configuration`.
+3) Crée la CI variable `CICD_CONFIGURATION_PATH` dans le projet cicd-docker avec comme valeur le chemin du projet cicd-configuration (ex : `cicd/cicd-configuration`).
 4) Lancer une pipeline avec comme variable d'environnement `INIT=yes` pour lancer la construction des images python-process et jsonnet-folder. 
 
 ### Arguments spécifiques
@@ -101,6 +101,17 @@ Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un
 - `ci-clean-nobuild && ci-clean-dev` pour nettoyer les anciennes versions, et les version de dev obselète.
 
 ### Build-docker module
+
+#### Prérequis
+
+Pour pouvoir utiliser le module build-docker, il faut d'abord respecter ces étapes :
+
+1) Avoir cicd-configuration de configurer avec les variables ci suivantes : 
+* **DOCKERHUB_TOKEN** : Un token d'accès à dockerhub qui permet le pull des images
+* **CICD_GITLAB_ADMIN_TOKEN** : Un token utilisateur admin de gitlab pour permettre la configuration des projets. A savoir qu'on peut changer son nom dans la configuration avec la variable `SETUP_GITLAB_TOKEN_NAME`.
+* **CICD_CONFIGURATION_PATH** : Le chemin du projet cicd-configuration (ex : `cicd/cicd-configuration`).
+
+2) Avoir rentrer son projet dans le fichier `setup/build.yml` en respectant la documentation.
 
 #### Lancement
 
