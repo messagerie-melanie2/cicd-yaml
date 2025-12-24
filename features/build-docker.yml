@@ -77,7 +77,7 @@ fill-jsonnet-from-python:
       --generate-jsonnet-current-repo ${CI_PROJECT_NAME} 
       --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH}
       --generate-jsonnet-pipeline-folder ${CI_PIPELINE_FOLDER_PATH}
-      --changes-info-file "${CICD_SCRIPT_FOLDER}${CHANGES_INFO}"
+      --changes-info-file ${CICD_SCRIPT_FOLDER}${CHANGES_INFO}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN} 
       --trigger-project ${CI_PROJECT_TRIGGER_CICD} 
