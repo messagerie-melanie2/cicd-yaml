@@ -72,6 +72,7 @@ jsonnet-folder-init:
     when: ['script_failure']
 
 test-build:
+  stage: build-init
   image:
     name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
     entrypoint: [""]
