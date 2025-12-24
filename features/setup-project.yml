@@ -1,9 +1,10 @@
 setup-trigger-project:
   stage: setup
   rules:
-    - if: $GITLAB_SETUP_MODE == null
-      when: never
-    - when: always
+    - if: $GITLAB_SETUP_MODE != null
+    - changes:
+        - "**/setup/**/*"
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
@@ -17,9 +18,10 @@ setup-trigger-project:
 setup-build-project:
   stage: setup
   rules:
-    - if: $GITLAB_SETUP_MODE == null
-      when: never
-    - when: always
+    - if: $GITLAB_SETUP_MODE != null
+    - changes:
+        - "**/setup/**/*"
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
