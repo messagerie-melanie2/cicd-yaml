@@ -1,7 +1,8 @@
 setup-trigger-project:
   stage: setup
   rules:
-    - if: $GITLAB_SETUP_MODE != null
+    - if: $GITLAB_SETUP_MODE == null
+      when: never
     - changes:
         - "**/setup/**/*trigger.yml"
     - when: never
@@ -18,7 +19,8 @@ setup-trigger-project:
 setup-build-project:
   stage: setup
   rules:
-    - if: $GITLAB_SETUP_MODE != null
+    - if: $GITLAB_SETUP_MODE == null
+      when: never
     - changes:
         - "**/setup/**/*build.yml"
     - when: never
