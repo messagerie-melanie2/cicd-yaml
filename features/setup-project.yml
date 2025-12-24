@@ -4,7 +4,7 @@ setup-trigger-project:
     - if: $GITLAB_SETUP_MODE == null
       when: never
     - changes:
-        - "**/setup/**/*trigger.yml"
+        - "**/setup/**/*triggers.yml"
       when: always
   tags:
     - $RUNNER_TAGS
