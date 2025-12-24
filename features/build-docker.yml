@@ -18,35 +18,6 @@ include:
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-rework
 
-# Get the required files using git
-#
-get-changes-from-git:
-  stage: prepare
-  tags:
-    - $RUNNER_TAGS
-  # needs:
-  #
-  rules:
-    - if: $ENABLE_BUILD != 'yes'
-      when: never
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
-      when: never
-    - if: $CI_PIPELINE_SOURCE =~ /^(schedule|web|trigger)/
-      variables:
-        CI_COMMIT_BEFORE_SHA: ${CI_COMMIT_SHA}
-    - when : always
-  image: ruby:2.6
-  needs:
-    - get-files-from-git
-  script:
-    - git diff --name-only ${CI_COMMIT_BEFORE_SHA} ${CI_COMMIT_SHA} >> ./${CHANGES_INFO}
-    - cat ./${CHANGES_INFO}
-    #
-  artifacts:
-    expire_in: 6 hours
-    paths:
-      - ./cicd-script/build-docker/
-
 # Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
 #
 .do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
@@ -66,7 +37,7 @@ fill-jsonnet-from-python:
   tags:
     - $RUNNER_TAGS
   needs:
-    - get-changes-from-git
+    - get-files-from-git
   #
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
