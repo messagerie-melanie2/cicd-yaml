@@ -5,7 +5,6 @@ setup-trigger-project:
       when: never
     - changes:
         - "**/setup/**/*triggers.yml"
-      when: always
   tags:
     - $RUNNER_TAGS
   needs:
@@ -23,7 +22,6 @@ setup-build-project:
       when: never
     - changes:
         - "**/setup/**/*build.yml"
-      when: always
   tags:
     - $RUNNER_TAGS
   needs:
