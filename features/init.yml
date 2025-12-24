@@ -75,6 +75,14 @@ test-build:
   image:
     name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
     entrypoint: [""]
+  tags:
+    - $RUNNER_TAGS
+  rules:
+    - if: $INIT == 'yes'
+      when: always
+    - when : never
+  needs:
+    - get-files-from-git
   variables:
     BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
   before_script:
