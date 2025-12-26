@@ -89,9 +89,12 @@ test-build:
   before_script:
     - mkdir -p ~/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > ~/.docker/config.json
+    - buildkitd --oci-worker-no-process-sandbox --addr unix:///tmp/buildkit.sock &
+    # 2. Attendre que le daemon soit prêt
+    - sleep 5
   script:
     - |
-      buildctl-daemonless.sh build \
+      buildctl.sh --addr unix:///tmp/buildkit.sock build \
         --frontend dockerfile.v0 \
         --local context=${INIT_JSONNET_FOLDER_BUILD_PATH} \
         --local dockerfile=${INIT_JSONNET_FOLDER_BUILD_PATH} \
