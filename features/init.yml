@@ -98,7 +98,7 @@ test-build:
         --frontend dockerfile.v0 \
         --local context=reg-image-builder/3.0 \
         --local dockerfile=reg-image-builder/3.0 \
-        --build-arg http_proxy=$http_proxy \
-        --build-arg https_proxy=$https_proxy \
-        --build-arg no_proxy=$no_proxy \
+        --opt build-arg:http_proxy=$http_proxy \
+        --opt build-arg:https_proxy=$https_proxy \
+        --opt build-arg:no_proxy=$no_proxy \
         --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
