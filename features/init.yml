@@ -102,3 +102,37 @@ test-build:
         --opt build-arg:https_proxy=$https_proxy \
         --opt build-arg:no_proxy=$no_proxy \
         --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
+
+test-build1:
+  stage: build-init
+  tags:
+    - $RUNNER_TAGS
+  rules:
+    - if: $TEST == 'yes'
+      when: always
+    - when : never
+  needs:
+    - get-files-from-git
+  variables:
+    NAME: "jsonnet-folder"
+    VERSION: "${INIT_JSONNET_FOLDER_VERSION}"
+    PARENT_VERSION: "${INIT_JSONNET_FOLDER_PARENT_VERSION}"
+    BUILD_PATH: "${INIT_JSONNET_FOLDER_BUILD_PATH}"
+    BUILD_BRANCH: ""
+    TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+  image:
+    name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
+    entrypoint: [""]
+  before_script:
+    - 'source $BEFORE_SCRIPT_PATH'
+  script:
+    - 'echo $RUNNER_TAGS'
+    #
+    # Log which image we are building
+    #
+    - 'echo Building docker image ${NAME} of stage build-init --parent-version : ${PARENT_VERSION} -- path : ${BUILD_PATH} -- version : ${VERSION}.'
+    #
+    # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
+    # Docker Builder Entrypoint
+    - '/builder/entrypoint.sh'
