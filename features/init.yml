@@ -136,3 +136,7 @@ test-build1:
     # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
     # Docker Builder Entrypoint
     - '/builder/entrypoint.sh'
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-script/
