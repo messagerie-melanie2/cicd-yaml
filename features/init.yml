@@ -75,7 +75,7 @@ test-build:
   stage: build-init
   image:
     name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
-    #entrypoint: [""]
+    entrypoint: [""]
   tags:
     - $RUNNER_TAGS
   rules:
@@ -87,6 +87,8 @@ test-build:
   before_script:
     - mkdir -p ~/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > ~/.docker/config.json
+    - buildkitd &
+    - sleep 5
   script:
     - |
       buildctl build \
