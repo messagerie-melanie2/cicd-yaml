@@ -93,6 +93,6 @@ test-build:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=reg-image-folder/3.0 \
-        --local dockerfile=reg-image-folder/3.0 \
+        --local context=reg-image-builder/3.0 \
+        --local dockerfile=reg-image-builder/3.0 \
         --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
