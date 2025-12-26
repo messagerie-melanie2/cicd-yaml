@@ -77,7 +77,7 @@ test-build:
     name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
     entrypoint: [""]
   tags:
-    - "cicd"
+    - $RUNNER_TAGS
   rules:
     - if: $TEST == 'yes'
       when: always
