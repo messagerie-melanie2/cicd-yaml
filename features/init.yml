@@ -79,7 +79,7 @@ test-build:
   tags:
     - $RUNNER_TAGS
   rules:
-    - if: $INIT == 'yes'
+    - if: $TEST == 'yes'
       when: always
     - when : never
   needs:
@@ -93,6 +93,6 @@ test-build:
     - |
       buildctl-daemonless.sh build \
         --frontend dockerfile.v0 \
-        --local context=. \
+        --local context=${INIT_JSONNET_FOLDER_BUILD_PATH} \
         --local dockerfile=${INIT_JSONNET_FOLDER_BUILD_PATH} \
         --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
