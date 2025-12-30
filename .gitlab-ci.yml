@@ -62,6 +62,12 @@ workflow:
     - if: $CI_COMMIT_MESSAGE =~ /.*no-build.*/
       when: never
 
+    - if: $CI_COMMIT_MESSAGE =~ /.*test-build.*/
+      variables:
+        CICD_BUILDER_TAG: "3.0-ht-buildah"
+        CICD_DEPLOY_TAG: "2.6_2.2-ht-buildah"
+        CI_BRANCH_TO_PULL: "ht-buildx"
+        
     # ----------------------
     # ---- LAUNCH SETUP ----
     # ----------------------
