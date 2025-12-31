@@ -1,13 +1,13 @@
 include: 
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: ht-rework
+    ref: main
     file: ".default-conf.yml"
     rules:
       - exists:
           paths:
             - .default-conf.yml
           project: "${CICD_CONFIGURATION_PATH}"
-          ref: ht-rework
+          ref: main
   - local: "features/init.yml"
     rules:
       - exists:

@@ -1,22 +1,22 @@
 include:
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: ht-rework
+    ref: main
     file: "build-docker/.default-conf.yml"
     rules:
       - exists:
           paths:
             - "build-docker/.default-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
-          ref: ht-rework
+          ref: main
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: ht-rework
+    ref: main
     file: "build-docker/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
             - "build-docker/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
-          ref: ht-rework
+          ref: main
 
 # Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
 #
