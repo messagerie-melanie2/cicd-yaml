@@ -28,6 +28,10 @@ reg-image-builder-init:
         --opt build-arg:https_proxy=$https_proxy \
         --opt build-arg:no_proxy=$no_proxy \
         --output type=image,name=${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG},push=true
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - ./cicd-script/
 
 python-process-init:
   stage: build-init
@@ -61,7 +65,7 @@ python-process-init:
     #
     # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
     # Kaniko Builder Entrypoint
-    - '$KBE'
+    - '/builder/entrypoint.sh'
   retry:
     max: 2
     when: ['script_failure']
@@ -97,7 +101,7 @@ jsonnet-folder-init:
     #
     # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
     # Kaniko Builder Entrypoint
-    - '$KBE'
+    - '/builder/entrypoint.sh'
   retry:
     max: 2
     when: ['script_failure']
