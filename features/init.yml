@@ -51,7 +51,7 @@ python-process-init:
     BUILD_BRANCH: ""
     ALLOWED_PUSH: "true"
     TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
-    OTHER_KANIKO_ARGS: ""
+    BUILDKITD_FLAGS: "--oci-worker-no-process-sandbox"
   image:
     name: "${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG}"
     entrypoint: [""]
@@ -89,6 +89,7 @@ jsonnet-folder-init:
     BUILD_BRANCH: ""
     ALLOWED_PUSH: "true"
     TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
+    BUILDKITD_FLAGS: "--oci-worker-no-process-sandbox"
   image:
     name: "${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG}"
     entrypoint: [""]
