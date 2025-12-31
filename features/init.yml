@@ -1,9 +1,40 @@
+reg-image-builder-init:
+  stage: build-init
+  image:
+    name: moby/buildkit:rootless
+    entrypoint: [""]
+  tags:
+    - $RUNNER_TAGS
+  rules:
+    - if: $INIT == 'yes'
+      when: always
+    - when : never
+  needs:
+    - get-files-from-git
+  variables:
+    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+  before_script:
+    - mkdir -p ~/.docker
+    - DOCKER_CFG="{'auths':{'$CI_REGISTRY':{'auth':'$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD|base64 -w 0)'},'https://index.docker.io/v1/':{'auth':'$(echo -n $DOCKERHUB_USER:$DOCKERHUB_TOKEN|base64 -w 0)'}},'proxies':{'default':{'httpProxy':'$http_proxy','httpsProxy':'$https_proxy','noProxy':'$NO_PROXY'}}}"
+    - DOCKER_CFG=$(echo "$DOCKER_CFG" | tr "'" "\"")
+    - echo $DOCKER_CFG > ~/.docker/config.json
+  script:
+    - |
+      buildctl-daemonless.sh build \
+        --frontend dockerfile.v0 \
+        --local context=reg-image-builder/3.0 \
+        --local dockerfile=reg-image-builder/3.0 \
+        --opt build-arg:http_proxy=$http_proxy \
+        --opt build-arg:https_proxy=$https_proxy \
+        --opt build-arg:no_proxy=$no_proxy \
+        --output type=image,name=${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG},push=true
+
 python-process-init:
   stage: build-init
   tags:
     - $RUNNER_TAGS
   needs:
-    - get-files-from-git
+    - reg-image-builder-init
   rules:
     - if: $INIT == 'yes'
       when: always
@@ -44,7 +75,7 @@ jsonnet-folder-init:
       when: always
     - when : never
   needs:
-    - get-files-from-git
+    - reg-image-builder-init
   variables:
     NAME: "jsonnet-folder"
     VERSION: "${INIT_JSONNET_FOLDER_VERSION}"
@@ -70,73 +101,3 @@ jsonnet-folder-init:
   retry:
     max: 2
     when: ['script_failure']
-
-test-build:
-  stage: build-init
-  image:
-    name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
-    entrypoint: [""]
-  tags:
-    - $RUNNER_TAGS
-  rules:
-    - if: $TEST == 'yes'
-      when: always
-    - when : never
-  needs:
-    - get-files-from-git
-  variables:
-    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
-  before_script:
-    - mkdir -p ~/.docker
-    - DOCKER_CFG="{'auths':{'$CI_REGISTRY':{'auth':'$(echo -n $CI_REGISTRY_USER:$CI_REGISTRY_PASSWORD|base64 -w 0)'},'https://index.docker.io/v1/':{'auth':'$(echo -n $DOCKERHUB_USER:$DOCKERHUB_TOKEN|base64 -w 0)'}},'proxies':{'default':{'httpProxy':'$http_proxy','httpsProxy':'$https_proxy','noProxy':'$NO_PROXY'}}}"
-    - DOCKER_CFG=$(echo "$DOCKER_CFG" | tr "'" "\"")
-    - echo $DOCKER_CFG > ~/.docker/config.json
-    #- echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > ~/.docker/config.json
-  script:
-    - |
-      buildctl-daemonless.sh build \
-        --frontend dockerfile.v0 \
-        --local context=reg-image-builder/3.0 \
-        --local dockerfile=reg-image-builder/3.0 \
-        --opt build-arg:http_proxy=$http_proxy \
-        --opt build-arg:https_proxy=$https_proxy \
-        --opt build-arg:no_proxy=$no_proxy \
-        --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
-
-test-build1:
-  stage: build-init
-  tags:
-    - $RUNNER_TAGS
-  rules:
-    - if: $TEST == 'yes'
-      when: always
-    - when : never
-  needs:
-    - get-files-from-git
-  variables:
-    NAME: "jsonnet-folder"
-    VERSION: "${INIT_JSONNET_FOLDER_VERSION}"
-    PARENT_VERSION: "${INIT_JSONNET_FOLDER_PARENT_VERSION}"
-    BUILD_PATH: "${INIT_JSONNET_FOLDER_BUILD_PATH}"
-    BUILD_BRANCH: ""
-    TAG: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION}"
-    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
-  image:
-    name: registry.gitlab-forge.din.developpement-durable.gouv.fr/snum/detn/gmcd/cicd/cicd-docker/reg-image-builder:3.0-ht-buildah
-    entrypoint: [""]
-  before_script:
-    - 'source $BEFORE_SCRIPT_PATH'
-  script:
-    - 'echo $RUNNER_TAGS'
-    #
-    # Log which image we are building
-    #
-    - 'echo Building docker image ${NAME} of stage build-init --parent-version : ${PARENT_VERSION} -- path : ${BUILD_PATH} -- version : ${VERSION}.'
-    #
-    # Call the entrypoint script, after going in the right directory (gitlab-runner starts in a directory that's not the workdir)
-    # Docker Builder Entrypoint
-    - '/builder/entrypoint.sh'
-  artifacts:
-    expire_in: 6 hours
-    paths:
-      - ./cicd-script/
