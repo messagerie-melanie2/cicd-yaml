@@ -1,0 +1,455 @@
+variables:
+  #=======================================================#
+  #============== .gitlab-ci.yml variables ===============#
+  #=======================================================#
+
+  ### Display name for the pipeline in GitLab UI.
+  ### Typically taken from the commit description.
+  PIPELINE_DISPLAY_NAME: '$CI_COMMIT_DESCRIPTION'
+
+  ### Protocol used to access the GitLab instance.
+  ### Typically 'https://' for secure connections, but can be 'http://' in internal/local setups.
+  ### Default: 'https://'
+  #GITLAB_PROTOCOL: 'https://'
+
+  ### GitLab domain URL used for project access and API calls.
+  ### Example: 'gitlab.fr/'
+  GITLAB_DOMAIN: 'gitlab.fr/'
+
+  ### Domain of the GitLab container registry (used for pushing/pulling images).
+  ### Example: 'registry.gitlab.fr/'
+  REGISTRY_DOMAIN: 'registry.gitlab.fr/'
+
+  ### Namespace containing CI/CD.
+  CICD_NAMESPACE: ''
+
+  ### Tags used to select which GitLab runners will execute the jobs in build pipeline.
+  ### Example: 'docker' (to use Docker runners)
+  RUNNER_TAGS: ''
+
+  ### Tags used to select which GitLab runners will execute the jobs in trigger pipeline.
+  ### Example: 'docker' (to use Docker runners)
+  TRIGGER_RUNNER_TAGS: ''
+
+  #================== Images variables ===================#
+
+  ### Registry path for the builder image.
+  CICD_BUILDER_PATH: 'cicd-docker/reg-image-builder'
+
+  ### Docker tag for the builder image (format: <app-version>).
+  ### Example: '2.0'
+  CICD_BUILDER_TAG: '2.0'
+
+  ### Registry path for an image that deploy outside of gitlab to an other tool (ex: Jenkins).
+  CICD_DEPLOY_PATH: 'cicd-docker/deploy-docker'
+
+  ### Docker tag for the deploy-docker image (format: <deploydocker-version>_<app-version>).
+  ### Example: '2.6_2.0-prod'
+  CICD_DEPLOY_TAG: '2.6_2.0-prod'
+
+  ### Registry path for Python process Docker image.
+  PYTHON_PROCESS_PATH: 'cicd-docker/python-process'
+
+  ### Docker tag for the Python process image (format: <python-version>_<app-version>).
+  ### Example: '3.9_1.0' = Python 3.9, internal version 1.0
+  PYTHON_PROCESS_TAG: '3.9_1.0-prod'
+
+  ### Registry path for Jsonnet Docker image.
+  JSONNET_FOLDER_PATH: 'cicd-docker/jsonnet-folder'
+
+  ### Docker tag for the Jsonnet image (format: <jsonnet-version>_<app-version>).
+  ### Example: '0.17.0_1.0'
+  JSONNET_FOLDER_TAG: '0.17.0_1.0-prod'
+
+  ### Git project used for cleaning logs during pipeline execution.
+  CICD_CLEAN_LOG_PATH: 'cicd/cicd-cleanlog'
+
+  ### Registry path for the clean log image.
+  CLEAN_LOG_PATH: 'cicd/cicd-docker/clean-log'
+
+  ### Docker tag for the clean log image (format: <cleanlog-version>_<app-version>).
+  ### Example: '3.9_1.0'
+  CLEAN_LOG_TAG: '3.9_1.0-prod'
+
+  #================ Init Image variables =================#
+
+  ### Docker version for initializing the Python image (format: <python-version>_<app-version>).
+  ### Example: '3.14_1.0-prod'
+  INIT_BUILD_PYTHON_PROCESS_VERSION : '3.14_1.0-prod'
+
+  ### Python version for initializing the Python image (format: <python-version>).
+  ### Example: '3.14'
+  INIT_BUILD_PYTHON_PROCESS_PARENT_VERSION : '3.14'
+
+  ### Dockerfile path for initializing the Python image.
+  ### Example: 'python-process/1.0'
+  INIT_BUILD_PYTHON_PROCESS_BUILD_PATH : 'python-process/1.0'
+
+  ### Docker version for initializing the Jsonnet image (format: <jsonnet-version>_<app-version>).
+  ### Example: 'trixie-slim_2.0-prod'
+  INIT_BUILD_JSONNET_FOLDER_VERSION : 'trixie-slim_2.0-prod'
+
+  ### Jsonnet version for initializing the Jsonnet image (format: <jsonnet-version>).
+  ### Example: 'trixie-slim'
+  INIT_BUILD_JSONNET_FOLDER_PARENT_VERSION : 'trixie-slim'
+
+  ### Dockerfile path for initializing the Jsonnet image.
+  ### Example: 'jsonnet-folder/2.0'
+  INIT_BUILD_JSONNET_FOLDER_BUILD_PATH : 'jsonnet-folder/2.0'
+
+  #=============== File paths variables ==================#
+
+  ### Git project containing CI/CD related scripts.
+  CICD_REPO_SCRIPT_PATH: 'cicd/cicd-script'
+
+  ### Folder containing CI/CD related scripts.
+  CICD_SCRIPT_FOLDER: 'cicd-script/'
+
+  ### Path to the main Python script executed in CI/CD.
+  PYTHON_BUILD_DOCKER_SCRIPT_PACKAGE: 'build_docker.main'
+
+  ### Path to the script launched before building executed in CI/CD.
+  BEFORE_SCRIPT_PATH: 'build_docker/before_script/before_script.sh'
+
+  ### Path to the Jsonnet source file used for pipeline configuration.
+  JSONNET_SRC: 'build_docker/jsonnet/.gitlab-ci.jsonnet'
+  
+  ### Path to a file where detected changes (git diff, etc.) are logged.
+  CHANGES_INFO: 'changes.txt'
+
+  ### Path to the Jsonnet pipelines created by python script used for pipeline creation.
+  CI_PIPELINE_FOLDER_PATH: "build_docker/jsonnet/pipelines"
+
+  ### Path to the yaml pipelines created by jsonnet script used for launching pipeline.
+  CI_PIPELINE_YAML_FOLDER_PATH: "build_docker/pipelines_yaml"
+
+  ### Path to the package Python setup project.
+  PYTHON_SETUP_SCRIPT_PACKAGE: "setup.main"
+
+  ### Path to the package Python setup project.
+  PYTHON_TRIGGER_SCRIPT_PACKAGE: "trigger.main"
+
+  ### Path to the package Python cleanlog project.
+  PYTHON_CLEAN_LOG_SCRIPT: "cleanlog.main"
+
+  #============== Default value variables ================#
+  
+  ### Default value necessary for the trigger feature (project-level trigger).
+  CI_PROJECT_TRIGGER_CICD: 'None'
+
+  ### Default value necessary for the trigger feature (branch-level trigger).
+  CI_BRANCH_TRIGGER_CICD: 'None'
+
+  ### Default value necessary for the trigger feature (file-change trigger).
+  CI_CHANGES_TRIGGER_CICD: 'None'
+
+  ### Default value necessary for the trigger feature (extra CI/CD variables).
+  CI_TRIGGER_VARIABLES_CICD: '{}'
+
+  #================== Features variables =================#
+
+  ### Git branch to pull git project containing CI/CD related scripts (e.g., production branch).
+  ### Example: 'prod'
+  CI_BRANCH_TO_PULL: 'prod'
+
+  ### Log level for build_docker feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #BUILD_DOCKER_LOG_LEVEL: "INFO"
+
+  ### Log level for clean_registry feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #CLEAN_REGISTRY_LOG_LEVEL: "INFO"
+
+  ### Log level for setup feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #SETUP_LOG_LEVEL: "INFO"
+
+  ### Log level for trigger feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #TRIGGER_LOG_LEVEL: "INFO"
+
+  ### Log level for clean_log feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #CLEAN_LOG_LOG_LEVEL: "INFO"
+
+  #=======================================================#
+  #============== Builder script variables ===============#
+  #=======================================================#
+
+  ###Dockerhub user used to pull dockerhub image.
+  DOCKERHUB_USER: "user"
+
+  ###Ignore /var/run when taking image snapshot. Set it to False to preserve /var/run/* in destination image.
+  #KANIKO_IGNORE_VAR_RUN: False
+
+  #=======================================================#
+  #=============== Script python variables ===============#
+  #=======================================================#
+
+  #============ Build-docker Script variables ============#
+
+  ### Name of the Dockerfile to use when building images.
+  ### Default: 'Dockerfile'
+  #DOCKER_FILE_NAME: 'Dockerfile'
+
+  ### Name of the marker file that disables build when present (deprecated).
+  ### Default: 'NO_BUILD'
+  #NOBUILD_FILE_NAME: 'NO_BUILD'
+
+  ### File that contains parent Docker image versions (deprecated).
+  ### Default: 'parent_versions'
+  #PARENT_VERSIONS_FILE_NAME: 'parent_versions'
+
+  ### File where build parameters are stored (YAML format).
+  ### Default: 'parameters.yml'
+  #PARAMETERS_FILE_NAME: 'parameters.yml'
+
+  ### Name of the Jsonnet function used for building Docker images.
+  ### Default: 'build_docker'
+  #JSONNET_BUILD_FUNCTION: 'build_docker'
+
+  ### Name of the Jsonnet function used for deploying Docker images.
+  ### Default: 'deploy_docker'
+  #JSONNET_DEPLOY_FUNCTION: 'deploy_docker'
+
+  ### Label used to mark the "build" stage in CI/CD pipeline.
+  ### Default: 'build-df'
+  #CICD_STAGE_BUILD_LABEL: 'build-df'
+
+  ### Keywords that identify the "main/master" or "production" branch.
+  ### Multiple values separated by commas.
+  ### Default: 'main,prod'
+  #GIT_MASTER_BRANCH_KEYWORDS: 'main,prod'
+
+  ### Keyword that indicates an official/public Docker image.
+  ### Default: 'official'
+  #DOCKER_IMAGE_HUB_KEYWORD: 'official'
+
+  ### Separator character used in Docker image tags (for multi-part tags).
+  ### Default: '_'
+  #DOCKER_IMAGE_TAG_SEPARATOR: '_'
+
+  ### Maximum number of parent levels to traverse when resolving image inheritance.
+  ### Default: '15'
+  #DOCKER_IMAGES_PARENT_LEVELS: '15'
+
+  ### Special keyword to indicate "no branch".
+  ### Default: 'nobranch'
+  #NO_BRANCH: 'nobranch'
+
+  ### Keyword to identify a pre-production environment.
+  ### Default: 'preprod'
+  #PREPROD_KEY: 'preprod'
+
+  ### Keyword to identify a production environment.
+  ### Default: 'prod'
+  #PROD_KEY: 'prod'
+
+  ### Keyword to identify a "recette" (testing/staging) environment.
+  ### Default: 'recette'
+  #RECETTE_KEY: 'recette'
+
+  ### List of repositories not to clean (comma-separated).
+  ### Default: '' (empty = all repositories can be cleaned)
+  #REPOSITORIES_WHITELIST: ''
+
+  ### Enable deployment.
+  ### Default: False
+  #ENABLE_DEPLOY: False
+  
+  #=============== Deploy Script variables ===============#
+
+  ### Mapping of environment names to their Jenkins webhook trigger URLs.
+  ### Used to trigger deployments depending on the environment.
+  ### Default: '{"prod":"https://jenkins-prod.fr/generic-webhook-trigger/invoke","preprod":"https://jenkins-preprod.fr/generic-webhook-trigger/invoke"}'
+  #PIPELINES_NAMES: '{"prod":"https://jenkins-prod.fr/generic-webhook-trigger/invoke","preprod":"https://jenkins-preprod.fr/generic-webhook-trigger/invoke"}'
+
+  ### Types of Docker Compose deployment supported by the pipeline.
+  ### Example values: swarm, corosync
+  ### Default: 'swarm'
+  #DOCKER_COMPOSE_TYPE: 'swarm'
+
+  ### Human-readable list of available pipeline names (display purposes).
+  ### Default: 'Pipeline Name'
+  #PIPELINES_NAMES_LIST: 'Pipeline Name'
+
+  ### Path where Git repositories are stored by default.
+  ### Default: '/usr/local/clusters/'
+  #PATH_GIT: '/usr/local/clusters/'
+
+  ### Registries used in your docker compose for deployment.
+  ### Example values: registry.gitlab.fr, registry.gitlab-forge.fr
+  ### Default: 'registry.gitlab.fr'
+  #REGISTRY_PATHS: 'registry.gitlab.fr'
+
+  #============== Clean-log Script variables =============#
+
+  ### Job statuses that will be deleted.
+  ### Default: 'skipped,canceled'
+  #CLEANLOG_STATUS_NO_LOG: 'skipped,canceled'
+
+  #=============== Setup Script variables ================#
+
+  ### Path to the GitLab CI configuration used for setup.
+  ### Default: ".gitlab-ci.yml@snum/detn/gmcd/cicd/cicd-yaml"
+  #SETUP_GITLAB_CI_CONFIG_PATH: ".gitlab-ci.yml@cicd/cicd-yaml"
+
+  ### Username for the GitLab account used during setup.
+  ### Default: "admin.gitlab"
+  #SETUP_GITLAB_ACCOUNT_USERNAME: "admin.gitlab"
+
+  ### GitLab token variable name used for project setup authentication.
+  ### Default: "CICD_GITLAB_ADMIN_TOKEN"
+  #SETUP_GITLAB_TOKEN_NAME: "CICD_GITLAB_ADMIN_TOKEN"
+
+  ### Variable name of cicd-configuration project path to create for every projects.
+  ### Default: ""
+  #SETUP_CICD_CONFIGURATION_PATH_VARIABLE_NAME: "CICD_CONFIGURATION_PATH"
+
+  ### Channel URL used for notifications.
+  ### Default: ""
+  #SETUP_CHANNEL_URL: ""
+
+  ### Type of schedule possible for every project using cicd-yaml.
+  ### Default: ""
+  #SETUP_SCHEDULE_TYPE: """{
+  #     "cleanlog": 
+  #     {
+  #         "description": "[rotate log] Schedule de rotation de log", 
+  #         "cron": "0 0 */5 * *", 
+  #         "cron_timezone": "Europe/Paris",
+  #         "variables":
+  #         {
+  #             "CLEANLOG_WEEKS_LIMIT" : 2,
+  #             "CI_COMMIT_MESSAGE": "[cleanlog] ci-clean-log "
+  #         }
+  #     }
+  # }"""
+
+  ### Type of schedule mandatory for every project using cicd-yaml.
+  ### Default: ""
+  #SETUP_SCHEDULE_MANDATORY = "cleanlog"
+
+  ### Folder path containing the setup build jobs.
+  ### Default: "build-docker/setup/"
+  #SETUP_BUILD_FOLDER_PATH: "build-docker/setup/"
+
+  ### Suffix that identifies setup build job files. 
+  ### Default: "build.yml"
+  #SETUP_BUILD_FILE_ENDSWITH: "build.yml"
+
+  ### Token variable name used for build operations.
+  ### Default: "CICD_API_TOKEN"
+  #SETUP_BUILD_TOKEN_NAME: "CICD_API_TOKEN"
+
+  ### Permission scopes required for the build token.
+  ### Default: "api,read_api,read_repository,write_repository,read_registry,write_registry"
+  #SETUP_BUILD_TOKEN_SCOPE: "api,read_api,read_repository,write_repository,read_registry,write_registry"
+
+  ### Access level applied to the generated build token.
+  ### Default: 40
+  #SETUP_BUILD_TOKEN_ACCESS_LEVEL: 40
+
+  ### Variable enabling or disabling build pipeline.
+  ### Default: "ENABLE_BUILD"
+  #SETUP_BUILD_ENABLE_BUILD_VARIABLE_NAME: "ENABLE_BUILD"
+
+  ### DockerHub token variable name used for build authentication.
+  ### Default: "DOCKERHUB_TOKEN"
+  #SETUP_BUILD_DOCKERHUB_TOKEN_VARIABLE_NAME: "DOCKERHUB_TOKEN"
+
+  ### Deploy token variable name used in deployment steps.
+  ### Default: "DEPLOY_TOKEN"
+  #SETUP_BUILD_DEPLOY_TOKEN_VARIABLE_NAME: "DEPLOY_TOKEN"
+
+  ### Type of schedule possible for every project using cicd-yaml build-docker module.
+  ### Default: ""
+  # SETUP_BUILD_SCHEDULE_TYPE: """{
+  #     "buildall": 
+  #     {
+  #         "description": "Daily rebuild for containers images (security updates)", 
+  #         "cron": "0 20 * * *", 
+  #         "cron_timezone": "Europe/Paris",
+  #         "variables":
+  #         {
+  #             "CI_COMMIT_MESSAGE": "[buildall] Daily rebuild - ci-all ci-check-before-push"
+  #         }
+  #     },
+  #     "cleanghostimage":
+  #     {
+  #         "description": "Daily cleaning for containers images (nobuild images)", 
+  #         "cron": "0 2 * * *", 
+  #         "cron_timezone": "Europe/Paris",
+  #         "variables":
+  #         {
+  #             "CI_COMMIT_MESSAGE": "[cleanghostimage] Daily cleaning 'NO_BUILD' - ci-clean-nobuild"
+  #         }
+  #     },
+  #     "cleandevimage":
+  #     {
+  #         "description": "Daily cleaning for containers images (dev images)", 
+  #         "cron": "30 1 * * *", 
+  #         "cron_timezone": "Europe/Paris",
+  #         "variables":
+  #         {
+  #             "CI_COMMIT_MESSAGE": "[cleandevimage] Daily cleaning 'DEV' - ci-clean-dev"
+  #         }
+  #     }
+  # }"""
+
+  ### Allowlist setup mandatory for every project using cicd-yaml build-docker module.
+  ### Default: ""
+  #SETUP_BUILD_MANDATORY_ALLOWLIST: '{}'
+
+  ### Folder path containing trigger configuration files.
+  ### Default: "trigger-project/setup/"
+  #SETUP_TRIGGER_FOLDER_PATH: "trigger-project/setup/"
+
+  ### Suffix that identifies trigger configuration files.
+  ### Default: "triggers.yml"
+  #SETUP_TRIGGER_FILE_ENDSWITH: "triggers.yml"
+
+  ### Description applied to automatically generated triggers.
+  ### Default: "Trigger created by the administrator"
+  #SETUP_TRIGGER_DESCRIPTION: "Trigger cree par L'administrateur"
+
+  ### Structured JSON defining arguments that can be set in triggers yaml.
+  ### Default example: '{"all": "...", "gitlab": "...", "jenkins": "..."}'
+  #SETUP_TRIGGER_ARGUMENTS: '{"all": "trigger_files,branchs_only_trigger,branchs_mapping", "gitlab": "focus_trigger", "jenkins": "additional_params,token_name"}'
+
+  ### Key name used for storing GitLab trigger tokens.
+  ### Default: "TRIGGER_TOKEN"
+  #SETUP_TRIGGER_GITLAB_VARIABLE_TRIGGER_KEY: "TRIGGER_TOKEN"
+
+  ### Jenkins trigger token variable name.
+  ### Default: "JENKINS_TRIGGER_TOKEN"
+  #SETUP_TRIGGER_JENKINS_TRIGGER_TOKEN_NAME: "JENKINS_TRIGGER_TOKEN"
+
+  ### Mapping between GitLab and Jenkins configuration variable keys.
+  ### Default example: '{"gitlab": "...", "jenkins": "..."}'
+  #SETUP_VARIABLE_CONFIGURATION_KEY: 'TRIGGER_CONFIGURATION'
+
+  #=============== Trigger Script variables ==============#
+
+  ### Url mapping for other trigger than gitlab depending of the trigger type (ex: jenkins...).
+  ### Example: '{"jenkins": {"prod":"https://my-jenkins.fr/generic-webhook-trigger/invoke","preprod":"https://my-preprod-jenkins.fr/generic-webhook-trigger/invoke"}}'
+  ### Default: "{}"
+  #TRIGGER_URL_MAPPING: "{}"
+
+  ### In case the trigger branch is not in the mapping, what url to take by default.
+  ### Default: "prod"
+  #TRIGGER_DEFAULT_BRANCH: "prod"
+
+  ### The local trigger parameter file that can be set on a project to overrides values.
+  ### Default: "./trigger_parameters.yml"
+  #TRIGGER_PARAMETERS_FILE_NAME: "./trigger_parameters.yml"
+
+  ### Creating trigger variable based on tag in the commit message.
+  ### Default: '[{"tag": "--parent-recette","name":"CI_PARENT_RECETTE"}]'
+  #TRIGGER_DESCRIPTION_VARIABLES: '[{"tag": "--parent-recette","name":"CI_PARENT_RECETTE"}]'
+
+  #=======================================================#
+  #=== Docker build variables (Depending your project) ===#
+  #=======================================================#
+
+  ### Put your varibles here

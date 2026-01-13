@@ -10,9 +10,9 @@ clean-registry-ghost-image:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_SCRIPT}
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_CLEAN_IMAGES_SCRIPT_PACKAGE}
       --delete-ghost-image
-      --debug-enabled ${CI_DEBUG}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}
 
@@ -28,8 +28,8 @@ clean-registry-dev-image:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_SCRIPT}
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_CLEAN_IMAGES_SCRIPT_PACKAGE}
       --delete-dev-image
-      --debug-enabled ${CI_DEBUG}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}

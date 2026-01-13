@@ -1,0 +1,6 @@
+- type: "gitlab" #ou "jenkins"
+  name: "NOM_DE_MON_PROJET_A_TRIGGER" #ou "NOM_DE_MA_PIPELINE_JENKINS"
+  id : ID_DE_MON_PROJET_A_TRIGGER #'si type == gitlab'
+  projects:
+    - name: "NOM_DE_MON_PROJET"
+      id: ID_DE_MON_PROJET

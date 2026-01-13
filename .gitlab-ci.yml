@@ -135,7 +135,6 @@ get-files-from-git:
     - echo TRIGGER_PAYLOAD -- $TRIGGER_PAYLOAD
     - echo CI_PROJECT_TRIGGER -- $CI_PROJECT_TRIGGER
     - echo CI_BRANCH_TO_PULL -- $CI_BRANCH_TO_PULL
-    - echo CI_DEBUG -- $CI_DEBUG
 
     #
     - git clone -b ${CI_BRANCH_TO_PULL} https://gitlab-ci-token:${CI_JOB_TOKEN}@${GITLAB_DOMAIN}${CICD_NAMESPACE}${CICD_REPO_SCRIPT_PATH}.git
