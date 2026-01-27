@@ -18,7 +18,7 @@ Pour faciliter l'installation, il est conseillé de créer un groupe CICD dans v
 
 #### Initialisation du projet cicd-configuration
 
-Pour initialiser le projet cicd-configuration, il faut récupérer ce qu'il y'a dans cicd-configuration.template dans ce repo et créez votre propre configuration en fonction de votre environnement. Les fichiers devront avoir le même nom avec le .template en moins (ex : .default-conf.yml au lieu de .default-conf.template.yml).
+Pour initialiser le projet cicd-configuration, il faut récupérer ce qu'il y'a dans cicd-configuration.template dans ce repo et créez votre propre configuration en fonction de votre environnement. Les fichiers devront avoir le même nom avec le .template en moins (ex : .default-conf.yml au lieu de .default-conf.template.yml). 
 
 A noté que vous pouvez mettre la configuration dans n'importe quel projet tant que la configuration est à la racine mais il est vivement conseillé de le séparer dans un projet différent.
 
