@@ -41,8 +41,8 @@ fill-jsonnet-from-python:
   #
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - python3 ${PYTHON_SCRIPT}
-      --debug-enabled ${CI_DEBUG}
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_DOCKER_BUILD_SCRIPT_PACKAGE}
       --generate-jsonnet 
       --generate-jsonnet-destination-file ${JSONNET_SRC} 
       --generate-jsonnet-current-repo ${CI_PROJECT_NAME} 
