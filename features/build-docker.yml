@@ -73,6 +73,9 @@ convert-jsonnet-to-json:
     - $RUNNER_TAGS
   needs:
     - fill-jsonnet-from-python
+  variables:
+    CI_PIPELINE_FOLDER_PATH: "${CICD_SCRIPT_FOLDER}${CI_PIPELINE_FOLDER_PATH}"
+    CI_PIPELINE_YAML_FOLDER_PATH: "${CICD_SCRIPT_FOLDER}${CI_PIPELINE_YAML_FOLDER_PATH}"
   #
   image: 
     name: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${JSONNET_FOLDER_PATH}:${JSONNET_FOLDER_TAG}
