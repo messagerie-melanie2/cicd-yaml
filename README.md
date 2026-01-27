@@ -8,11 +8,11 @@ Ce projet utilise une **pipeline GitLab CI/CD modulaire**, organisée autour d'u
 
 ### Mise en place d'un groupe CICD
 
-Pour faciliter l'installation, il est conseillé de créer un groupe CICD dans votre Gitlab. Ce groupe sera composé de plusieurs projets :
-* **cicd-yaml** : Contient les yaml constituant la CI avec les templates de la configuration à mettre en place.
-* **cicd-script** : Contient les script utilisés par la CI pour ces features.
-* **cicd-docker** : Contient des images dockers utilisées par la CI pour ces features
-* **cicd-configuration** : Contient la configuration des projets permettant de personnaliser la CI et configurer automatiquement les autres projets pour qu'ils puissent utiliser la CI.
+Pour faciliter l'installation, il est conseillé de créer un groupe CICD dans votre Gitlab. Ce groupe sera composé de plusieurs projets :  
+* **cicd-yaml** : Contient les yaml constituant la CI avec les templates de la configuration à mettre en place.  
+* **cicd-script** : Contient les script utilisés par la CI pour ces features.  
+* **cicd-docker** : Contient des images dockers utilisées par la CI pour ces features  
+* **cicd-configuration** : Contient la configuration des projets permettant de personnaliser la CI et configurer automatiquement les autres projets pour qu'ils puissent utiliser la CI.  
 
 ### Initialisation de la CI
 
@@ -47,8 +47,6 @@ Pour pouvoir initialiser le projet cicd-docker et donc permettre l'utilisation d
 ---
 
 ## Configuration d'un projet pour utiliser le module build-docker
-
-Pour comprendre comment marche le build et ces fonctionnalités, voir la documentation dans cicd-yaml.
 
 ### Explication
 
@@ -279,15 +277,6 @@ Chaque fichier inclus contient uniquement la configuration nécessaire à une fo
 * **setup-project.yml** : Configuration des projets pour permettre les différentes features (Build et Trigger).
 * **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab.
 * **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab.
-
-### Guide d'installation
-
-Pour pouvoir utiliser tout type de modules, il faudra au préalable faire les étapes suivantes :
-
-1) Récupérer l'image docker `gcr.io/kaniko-project/executor:v1.19.2-debug` et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/kaniko-executor:v1.19.2-debug`.
-2) Builder en local l'image dans cicd-docker/reg-image-builder/2.0/Dockerfile et la push dans la registry de cicd-docker avec comme nom `ma_registry/mon_path/cicd-docker/reg-image-builder:2.0-prod`. 
-3) Crée la CI variable `CICD_CONFIGURATION_PATH` dans le projet cicd-docker avec comme valeur le chemin du projet cicd-configuration (ex : `cicd/cicd-configuration`).
-4) Lancer une pipeline avec comme variable d'environnement `INIT=yes` pour lancer la construction des images python-process et jsonnet-folder. 
 
 ### Arguments spécifiques
 
