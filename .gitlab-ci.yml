@@ -144,4 +144,4 @@ get-files-from-git:
   artifacts:
     expire_in: 6 hours
     paths:
-      - ./cicd-script/
+      - ./
