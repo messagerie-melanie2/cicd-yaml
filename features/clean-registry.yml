@@ -11,7 +11,7 @@ clean-registry-ghost-image:
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - cd ${CICD_SCRIPT_FOLDER}
-    - python3 -m ${PYTHON_CLEAN_IMAGES_SCRIPT_PACKAGE}
+    - python3 -m ${PYTHON_CLEAN_REGISTRY_SCRIPT_PACKAGE}
       --delete-ghost-image
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}
@@ -29,7 +29,7 @@ clean-registry-dev-image:
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - cd ${CICD_SCRIPT_FOLDER}
-    - python3 -m ${PYTHON_CLEAN_IMAGES_SCRIPT_PACKAGE}
+    - python3 -m ${PYTHON_CLEAN_REGISTRY_SCRIPT_PACKAGE}
       --delete-dev-image
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}
