@@ -13,6 +13,7 @@ clean-registry-ghost-image:
     - cd ${CICD_SCRIPT_FOLDER}
     - python3 -m ${PYTHON_CLEAN_REGISTRY_SCRIPT_PACKAGE}
       --delete-ghost-image
+      --current-repo ${CI_PROJECT_NAME}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}
 
@@ -31,5 +32,6 @@ clean-registry-dev-image:
     - cd ${CICD_SCRIPT_FOLDER}
     - python3 -m ${PYTHON_CLEAN_REGISTRY_SCRIPT_PACKAGE}
       --delete-dev-image
+      --current-repo ${CI_PROJECT_NAME}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN}
