@@ -1,4 +1,4 @@
-# GitLab CI Pipeline Présentation
+# GitLab CI Pipeline Présentation 
 
 Ce projet utilise une **pipeline GitLab CI/CD modulaire**, organisée autour d'un fichier parent `.gitlab-ci.yml` qui inclut plusieurs blocs YAML spécifiques à chaque fonctionnalité.
 
