@@ -1,11 +1,11 @@
 include: 
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: main
-    file: ".default-conf.yml"
+    file: "configuration/.default-conf.yml"
     rules:
       - exists:
           paths:
-            - .default-conf.yml
+            - configuration/.default-conf.yml
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-issues
   - project: "${CICD_CONFIGURATION_PATH}"
