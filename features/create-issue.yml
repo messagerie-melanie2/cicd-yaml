@@ -1,8 +1,9 @@
 create-issue:
   stage: manage
   rules:
-    - if: $CREATE_ISSUE_ISSUE_1 == null
-      when: never
+    - if: $CREATE_ISSUE_ISSUE_1 != null
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
