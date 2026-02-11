@@ -334,8 +334,8 @@ variables:
   #SETUP_SCHEDULE_MANDATORY = "cleanlog"
 
   ### Folder path containing the setup build jobs.
-  ### Default: "build-docker/setup/"
-  #SETUP_BUILD_FOLDER_PATH: "build-docker/setup/"
+  ### Default: "setup/"
+  #SETUP_BUILD_FOLDER_PATH: "setup/"
 
   ### Suffix that identifies setup build job files. 
   ### Default: "build.yml"
