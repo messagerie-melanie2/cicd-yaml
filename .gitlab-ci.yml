@@ -10,11 +10,11 @@ include:
           ref: ht-issues
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-issues
-    file: "configuration/.${CI_PROJECT_NAME}-conf.yml"
+    file: "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
           paths:
-            - "configuration/.${CI_PROJECT_NAME}-conf.yml"
+            - "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-issues
   - local: "features/init.yml"
