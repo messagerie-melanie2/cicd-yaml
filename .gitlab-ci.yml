@@ -1,6 +1,6 @@
 include: 
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
+    ref: ht-issues
     file: "configuration/.default-conf.yml"
     rules:
       - exists:
@@ -9,7 +9,7 @@ include:
           project: "${CICD_CONFIGURATION_PATH}"
           ref: ht-issues
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
+    ref: ht-issues
     file: "configuration/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
