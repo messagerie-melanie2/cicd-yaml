@@ -133,7 +133,10 @@ variables:
   PYTHON_TRIGGER_SCRIPT_PACKAGE: "trigger.main"
 
   ### Path to the package Python cleanlog project.
-  PYTHON_CLEAN_LOG_SCRIPT: "cleanlog.main"
+  PYTHON_CLEAN_LOG_SCRIPT: "clean_log.main"
+
+  ### Path to the package Python cleanlog project.
+  PYTHON_CREATE_ISSUE_SCRIPT: "create_issue.main"
 
   #============== Default value variables ================#
   
@@ -290,7 +293,7 @@ variables:
   ### Job statuses that will be deleted.
   ### Default: 'skipped,canceled'
   #CLEANLOG_STATUS_NO_LOG: 'skipped,canceled'
-
+  
   #=============== Setup Script variables ================#
 
   ### Path to the GitLab CI configuration used for setup.
