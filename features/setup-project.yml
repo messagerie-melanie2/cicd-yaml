@@ -31,4 +31,20 @@ setup-build-project:
     - cd ${CICD_SCRIPT_FOLDER}
     - python3 -m ${PYTHON_SETUP_SCRIPT_PACKAGE}
       --setup-build
-    
+
+setup-schedule-project:
+  stage: setup
+  rules:
+    - if: $GITLAB_SETUP_MODE == null
+      when: never
+    - changes:
+        - "setup/**/*.yml"
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_SETUP_SCRIPT_PACKAGE}
+      --setup-schedule
