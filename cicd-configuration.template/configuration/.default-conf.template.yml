@@ -405,8 +405,8 @@ variables:
   #SETUP_BUILD_MANDATORY_ALLOWLIST: '{}'
 
   ### Folder path containing trigger configuration files.
-  ### Default: "trigger-project/setup/"
-  #SETUP_TRIGGER_FOLDER_PATH: "trigger-project/setup/"
+  ### Default: "setup/"
+  #SETUP_TRIGGER_FOLDER_PATH: "setup/"
 
   ### Suffix that identifies trigger configuration files.
   ### Default: "triggers.yml"
