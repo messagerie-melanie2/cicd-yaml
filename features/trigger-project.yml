@@ -3,6 +3,8 @@ trigger:
   rules:
     - if: $TRIGGER_CONFIGURATION == null
       when: never
+    - if: $LAUNCH_FEATURE !~ /trigger-project/
+      when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - when: always

@@ -3,6 +3,8 @@
 .do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
   - if: $ENABLE_BUILD != 'yes'
     when: never
+  - if: $LAUNCH_FEATURE !~ /build-docker/
+    when: never
   - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
     when: never
   # always run in other cases (if previous job didn't fail)

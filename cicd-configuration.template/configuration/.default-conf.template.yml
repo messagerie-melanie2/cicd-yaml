@@ -31,6 +31,10 @@ variables:
   ### Example: 'docker' (to use Docker runners)
   TRIGGER_RUNNER_TAGS: ''
 
+  ### Variable used to launch a specific CI/CD feature.
+  ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
+  LAUNCH_FEATURE: 'build-docker,trigger-project'
+
   #================== Images variables ===================#
 
   ### Registry path for the builder image.

@@ -1,7 +1,7 @@
 create-issue:
   stage: manage
   rules:
-    - if: $CREATE_ISSUE_ISSUE_1 != null
+    - if: $LAUNCH_FEATURE =~ /create-issue/
       when: always
     - when: never
   tags:
