@@ -1,4 +1,4 @@
-create-issue:
+launch-script:
   stage: manage
   rules:
     - if: $LAUNCH_FEATURE =~ /launch-script/
