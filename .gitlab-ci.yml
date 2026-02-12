@@ -1,4 +1,8 @@
-include: 
+include:
+  - local: "configuration/.default-conf.yml"
+    rules:
+      - exists:
+          - configuration/.default-conf.yml
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-issues
     file: "configuration/.default-conf.yml"
