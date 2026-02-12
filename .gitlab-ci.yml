@@ -49,6 +49,10 @@ include:
     rules:
       - exists:
           - features/create-issue.yml
+  - local: "features/launch-script.yml"
+    rules:
+      - exists:
+          - features/launch-script.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"

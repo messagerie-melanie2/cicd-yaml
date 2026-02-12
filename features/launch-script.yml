@@ -1,0 +1,15 @@
+create-issue:
+  stage: manage
+  rules:
+    - if: $LAUNCH_FEATURE =~ /launch-script/
+      when: always
+    - when: never
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${LAUNCH_SCRIPT_FOLDER}
+    - python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}
+    
