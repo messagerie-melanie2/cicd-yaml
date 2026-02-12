@@ -11,5 +11,7 @@ launch-script:
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - cd ${LAUNCH_SCRIPT_FOLDER}
+    - ls
+    - echo "python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}"
     - python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}
     
