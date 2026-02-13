@@ -10,14 +10,14 @@ launch-script:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
-    - cd ${LAUNCH_SCRIPT_FOLDER}
     - |
       if [ "$GET_CICD_MODULE" = "no" ]; then
         echo "Pas de récupération des modules cicd-script"
       else
         echo "Récupération des modules cicd-script..."
-        cp -r "$CICD_SCRIPT_FOLDER" "$LAUNCH_SCRIPT_FOLDER"/
+        cp -r ./"$CICD_SCRIPT_FOLDER"/ ./"$LAUNCH_SCRIPT_FOLDER"/
       fi
+    - cd ${LAUNCH_SCRIPT_FOLDER}
     - ls
     - echo "python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}"
     - python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}
