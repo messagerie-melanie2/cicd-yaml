@@ -16,7 +16,7 @@ launch-script:
         echo "Pas de récupération des modules cicd-script"
       else
         echo "Récupération des modules cicd-script..."
-        cp -r "$CICD_SCRIPT_FOLDER"/ "$LAUNCH_SCRIPT_FOLDER"/
+        cp -r "$CICD_SCRIPT_FOLDER" "$LAUNCH_SCRIPT_FOLDER"/
       fi
     - ls
     - echo "python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}"
