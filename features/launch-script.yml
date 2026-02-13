@@ -15,7 +15,7 @@ launch-script:
         echo "Pas de récupération des modules cicd-script"
       else
         echo "Récupération des modules cicd-script..."
-        cp -r ./"$CICD_SCRIPT_FOLDER"/ ./"$LAUNCH_SCRIPT_FOLDER"/
+        cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/
       fi
     - cd ${LAUNCH_SCRIPT_FOLDER}
     - ls
