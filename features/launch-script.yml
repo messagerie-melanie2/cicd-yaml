@@ -9,6 +9,11 @@ launch-script:
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  #TEST
+  variables:
+    LAUNCH_SCRIPT_FOLDER: "script"
+    LAUNCH_SCRIPT_MODULE: "main"
+    LAUNCH_SCRIPT_ARGUMENT: "--project-id ${CI_PROJECT_ID} --token ${CICD_GMCD_TOKEN}"
   script:
     - |
       if [ "$GET_CICD_MODULE" = "no" ]; then
@@ -17,6 +22,7 @@ launch-script:
         echo "Récupération des modules cicd-script..."
         mkdir ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
         cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
+        export PYTHONPATH="$PYTHONPATH:./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/"
       fi
     - |
       if [ "$INSTALL_OTHER_MODULE" = "no" ]; then
