@@ -15,7 +15,16 @@ launch-script:
         echo "Pas de récupération des modules cicd-script"
       else
         echo "Récupération des modules cicd-script..."
-        cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/
+        cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
+      fi
+    - |
+      if [ "$INSTALL_OTHER_MODULE" = "no" ]; then
+        echo "Pas de création de venv"
+      else
+        echo "Création d'un venv et installation des modules"
+        python3 -m venv ./"$LAUNCH_SCRIPT_FOLDER"/venv
+        source ./"$LAUNCH_SCRIPT_FOLDER"/venv/bin/activate
+        pip install --upgrade pip && pip install --no-cache-dir -r ./"$LAUNCH_SCRIPT_FOLDER"/requirements_pip
       fi
     - cd ${LAUNCH_SCRIPT_FOLDER}
     - ls
