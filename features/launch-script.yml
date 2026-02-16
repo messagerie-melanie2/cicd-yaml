@@ -30,4 +30,5 @@ launch-script:
     - ls
     - echo "python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}"
     - python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}
+    - bash -c "${LAUNCH_SCRIPT_OTHER_COMMANDS}"
     
