@@ -22,7 +22,7 @@ launch-script:
         echo "Récupération des modules cicd-script..."
         mkdir ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
         cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
-        export PYTHONPATH='$PYTHONPATH:"$CI_PROJECT_DIR""$LAUNCH_SCRIPT_FOLDER"/ci_modules/'
+        export PYTHONPATH="$PYTHONPATH:$CI_PROJECT_DIR$LAUNCH_SCRIPT_FOLDER/ci_modules/"
         export -p
       fi
     - |
