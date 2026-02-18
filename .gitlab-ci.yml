@@ -4,14 +4,14 @@ include:
       - exists:
           - configuration/.default-conf.yml
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: ht-issues
+    ref: main
     file: "configuration/.default-conf.yml"
     rules:
       - exists:
           paths:
             - configuration/.default-conf.yml
           project: "${CICD_CONFIGURATION_PATH}"
-          ref: ht-issues
+          ref: main
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: ht-issues
     file: "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
@@ -20,7 +20,7 @@ include:
           paths:
             - "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
-          ref: ht-issues
+          ref: main
   - local: "features/init.yml"
     rules:
       - exists:

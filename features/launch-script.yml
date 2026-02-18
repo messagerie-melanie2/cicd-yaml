@@ -9,9 +9,6 @@ launch-script:
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
-  variables:
-    GIT_STRATEGY: clone
-    GIT_DEPTH: 0
   script:
     - |
       if [ "$GET_CICD_MODULE" = "no" ]; then
