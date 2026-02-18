@@ -1,0 +1,17 @@
+create-issue:
+  stage: manage
+  rules:
+    - if: $LAUNCH_FEATURE =~ /create-issue/
+      when: always
+    - when: never
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_CREATE_ISSUE_SCRIPT}
+      --project-id ${CI_PROJECT_ID} 
+      --token ${CICD_GMCD_TOKEN}
+    

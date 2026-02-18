@@ -1,27 +1,9 @@
-include:
-  - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
-    file: "build-docker/.default-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - "build-docker/.default-conf.yml"
-          project: "${CICD_CONFIGURATION_PATH}"
-          ref: main
-  - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
-    file: "build-docker/.${CI_PROJECT_NAME}-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - "build-docker/.${CI_PROJECT_NAME}-conf.yml"
-          project: "${CICD_CONFIGURATION_PATH}"
-          ref: main
-
 # Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
 #
 .do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
   - if: $ENABLE_BUILD != 'yes'
+    when: never
+  - if: $LAUNCH_FEATURE !~ /build-docker/
     when: never
   - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
     when: never

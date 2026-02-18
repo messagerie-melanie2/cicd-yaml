@@ -1,0 +1,33 @@
+launch-script:
+  stage: manage
+  rules:
+    - if: $LAUNCH_FEATURE =~ /launch-script/
+      when: always
+    - when: never
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - |
+      if [ "$GET_CICD_MODULE" = "no" ]; then
+        echo "Pas de récupération des modules cicd-script"
+      else
+        echo "Récupération des modules cicd-script..."
+        mkdir ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
+        cp -r ./"$CICD_SCRIPT_FOLDER"/* ./"$LAUNCH_SCRIPT_FOLDER"/ci_modules/
+      fi
+    - |
+      if [ "$INSTALL_OTHER_MODULE" = "no" ]; then
+        echo "Pas de création de venv"
+      else
+        echo "Installation des modules"
+        pip install --upgrade pip && pip install --no-cache-dir -r ./"$LAUNCH_SCRIPT_FOLDER"/requirements_pip
+      fi
+    - cd ${LAUNCH_SCRIPT_FOLDER}
+    - ls
+    - echo "python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}"
+    - python3 -m ${LAUNCH_SCRIPT_MODULE} ${LAUNCH_SCRIPT_ARGUMENT}
+    - bash -c "${LAUNCH_SCRIPT_OTHER_COMMANDS}"
+    

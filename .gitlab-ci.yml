@@ -1,11 +1,24 @@
-include: 
+include:
+  - local: "configuration/.default-conf.yml"
+    rules:
+      - exists:
+          - configuration/.default-conf.yml
   - project: "${CICD_CONFIGURATION_PATH}"
     ref: main
-    file: ".default-conf.yml"
+    file: "configuration/.default-conf.yml"
     rules:
       - exists:
           paths:
-            - .default-conf.yml
+            - configuration/.default-conf.yml
+          project: "${CICD_CONFIGURATION_PATH}"
+          ref: main
+  - project: "${CICD_CONFIGURATION_PATH}"
+    ref: ht-issues
+    file: "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
           ref: main
   - local: "features/init.yml"
@@ -32,6 +45,14 @@ include:
     rules:
       - exists:
           - features/setup-project.yml
+  - local: "features/create-issue.yml"
+    rules:
+      - exists:
+          - features/create-issue.yml
+  - local: "features/launch-script.yml"
+    rules:
+      - exists:
+          - features/launch-script.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
@@ -86,6 +107,7 @@ stages:
   - trigger
   - setup
   - build-init
+  - manage
 
 # Get the required files using git
 #

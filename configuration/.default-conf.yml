@@ -27,9 +27,9 @@ variables:
   ### Example: 'docker' (to use Docker runners)
   RUNNER_TAGS: ''
 
-  ### Tags used to select which GitLab runners will execute the jobs in trigger pipeline.
-  ### Example: 'docker' (to use Docker runners)
-  TRIGGER_RUNNER_TAGS: ''
+  ### Variable used to launch a specific CI/CD feature.
+  ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
+  LAUNCH_FEATURE: 'build-docker,trigger-project'
 
   #================== Images variables ===================#
 
@@ -38,34 +38,34 @@ variables:
 
   ### Docker tag for the builder image (format: <app-version>).
   ### Example: '2.0'
-  CICD_BUILDER_TAG: '2.0'
+  CICD_BUILDER_TAG: '3.0-prod'
 
   ### Registry path for an image that deploy outside of gitlab to an other tool (ex: Jenkins).
   CICD_DEPLOY_PATH: 'cicd-docker/deploy-docker'
 
   ### Docker tag for the deploy-docker image (format: <deploydocker-version>_<app-version>).
-  ### Example: '2.6_2.0-prod'
-  CICD_DEPLOY_TAG: '2.6_2.0-prod'
+  ### Example: '2.6_2.0'
+  CICD_DEPLOY_TAG: '2.6_2.2-prod'
 
   ### Registry path for Python process Docker image.
   PYTHON_PROCESS_PATH: 'cicd-docker/python-process'
 
   ### Docker tag for the Python process image (format: <python-version>_<app-version>).
   ### Example: '3.9_1.0' = Python 3.9, internal version 1.0
-  PYTHON_PROCESS_TAG: '3.9_1.0-prod'
+  PYTHON_PROCESS_TAG: '3.14_1.0-prod'
 
   ### Registry path for Jsonnet Docker image.
   JSONNET_FOLDER_PATH: 'cicd-docker/jsonnet-folder'
 
   ### Docker tag for the Jsonnet image (format: <jsonnet-version>_<app-version>).
   ### Example: '0.17.0_1.0'
-  JSONNET_FOLDER_TAG: '0.17.0_1.0-prod'
+  JSONNET_FOLDER_TAG: 'trixie-slim_2.0-prod'
 
   ### Git project used for cleaning logs during pipeline execution.
-  CICD_CLEAN_LOG_PATH: 'cicd/cicd-cleanlog'
-
+  CICD_CLEAN_LOG_PATH: 'cicd-cleanlog'
+  
   ### Registry path for the clean log image.
-  CLEAN_LOG_PATH: 'cicd/cicd-docker/clean-log'
+  CLEAN_LOG_PATH: 'cicd-docker/clean-log'
 
   ### Docker tag for the clean log image (format: <cleanlog-version>_<app-version>).
   ### Example: '3.9_1.0'
@@ -75,32 +75,32 @@ variables:
 
   ### Docker version for initializing the Python image (format: <python-version>_<app-version>).
   ### Example: '3.14_1.0-prod'
-  INIT_BUILD_PYTHON_PROCESS_VERSION : '3.14_1.0-prod'
+  INIT_PYTHON_PROCESS_VERSION : '3.14_1.0-prod'
 
   ### Python version for initializing the Python image (format: <python-version>).
   ### Example: '3.14'
-  INIT_BUILD_PYTHON_PROCESS_PARENT_VERSION : '3.14'
+  INIT_PYTHON_PROCESS_PARENT_VERSION : '3.14'
 
   ### Dockerfile path for initializing the Python image.
   ### Example: 'python-process/1.0'
-  INIT_BUILD_PYTHON_PROCESS_BUILD_PATH : 'python-process/1.0'
+  INIT_PYTHON_PROCESS_BUILD_PATH : 'python-process/1.0'
 
   ### Docker version for initializing the Jsonnet image (format: <jsonnet-version>_<app-version>).
   ### Example: 'trixie-slim_2.0-prod'
-  INIT_BUILD_JSONNET_FOLDER_VERSION : 'trixie-slim_2.0-prod'
+  INIT_JSONNET_FOLDER_VERSION : 'trixie-slim_2.0-prod'
 
   ### Jsonnet version for initializing the Jsonnet image (format: <jsonnet-version>).
   ### Example: 'trixie-slim'
-  INIT_BUILD_JSONNET_FOLDER_PARENT_VERSION : 'trixie-slim'
+  INIT_JSONNET_FOLDER_PARENT_VERSION : 'trixie-slim'
 
   ### Dockerfile path for initializing the Jsonnet image.
   ### Example: 'jsonnet-folder/2.0'
-  INIT_BUILD_JSONNET_FOLDER_BUILD_PATH : 'jsonnet-folder/2.0'
+  INIT_JSONNET_FOLDER_BUILD_PATH : 'jsonnet-folder/2.0'
 
   #=============== File paths variables ==================#
 
   ### Git project containing CI/CD related scripts.
-  CICD_REPO_SCRIPT_PATH: 'cicd/cicd-script'
+  CICD_REPO_SCRIPT_PATH: 'cicd-script'
 
   ### Folder containing CI/CD related scripts.
   CICD_SCRIPT_FOLDER: 'cicd-script/'
@@ -133,7 +133,10 @@ variables:
   PYTHON_TRIGGER_SCRIPT_PACKAGE: "trigger.main"
 
   ### Path to the package Python cleanlog project.
-  PYTHON_CLEAN_LOG_SCRIPT: "cleanlog.main"
+  PYTHON_CLEAN_LOG_SCRIPT: "clean_log.main"
+
+  ### Path to the package Python cleanlog project.
+  PYTHON_CREATE_ISSUE_SCRIPT: "create_issue.main"
 
   #============== Default value variables ================#
   
@@ -153,7 +156,7 @@ variables:
 
   ### Git branch to pull git project containing CI/CD related scripts (e.g., production branch).
   ### Example: 'prod'
-  CI_BRANCH_TO_PULL: 'prod'
+  CI_BRANCH_TO_PULL: 'main'
 
   ### Log level for build_docker feature.
   ### Values: https://docs.python.org/3/library/logging.html#levels
@@ -290,11 +293,11 @@ variables:
   ### Job statuses that will be deleted.
   ### Default: 'skipped,canceled'
   #CLEANLOG_STATUS_NO_LOG: 'skipped,canceled'
-
+  
   #=============== Setup Script variables ================#
 
   ### Path to the GitLab CI configuration used for setup.
-  ### Default: ".gitlab-ci.yml@snum/detn/gmcd/cicd/cicd-yaml"
+  ### Default: ".gitlab-ci.yml@cicd/cicd-yaml"
   #SETUP_GITLAB_CI_CONFIG_PATH: ".gitlab-ci.yml@cicd/cicd-yaml"
 
   ### Username for the GitLab account used during setup.
@@ -334,8 +337,8 @@ variables:
   #SETUP_SCHEDULE_MANDATORY = "cleanlog"
 
   ### Folder path containing the setup build jobs.
-  ### Default: "build-docker/setup/"
-  #SETUP_BUILD_FOLDER_PATH: "build-docker/setup/"
+  ### Default: "setup/"
+  #SETUP_BUILD_FOLDER_PATH: "setup/"
 
   ### Suffix that identifies setup build job files. 
   ### Default: "build.yml"
@@ -405,8 +408,8 @@ variables:
   #SETUP_BUILD_MANDATORY_ALLOWLIST: '{}'
 
   ### Folder path containing trigger configuration files.
-  ### Default: "trigger-project/setup/"
-  #SETUP_TRIGGER_FOLDER_PATH: "trigger-project/setup/"
+  ### Default: "setup/"
+  #SETUP_TRIGGER_FOLDER_PATH: "setup/"
 
   ### Suffix that identifies trigger configuration files.
   ### Default: "triggers.yml"

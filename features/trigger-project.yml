@@ -1,33 +1,15 @@
-include:
-  - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
-    file: "trigger-project/.default-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - "trigger-project/.default-conf.yml"
-          project: "${CICD_CONFIGURATION_PATH}"
-          ref: main
-  - project: "${CICD_CONFIGURATION_PATH}"
-    ref: main
-    file: "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
-    rules:
-      - exists:
-          paths:
-            - "trigger-project/.${CI_PROJECT_NAME}-conf.yml"
-          project: "${CICD_CONFIGURATION_PATH}"
-          ref: main
-
 trigger:
   stage: trigger
   rules:
     - if: $TRIGGER_CONFIGURATION == null
       when: never
+    - if: $LAUNCH_FEATURE !~ /trigger-project/
+      when: never
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
       when: never
     - when: always
   tags:
-    - $TRIGGER_RUNNER_TAGS
+    - $RUNNER_TAGS
   needs:
     - get-files-from-git
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}

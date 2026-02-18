@@ -1,0 +1,51 @@
+variables:
+  #=======================================================#
+  #============== .gitlab-ci.yml variables ===============#
+  #=======================================================#
+
+  ### GitLab domain URL used for project access and API calls.
+  ### Example: 'gitlab.fr/'
+  GITLAB_DOMAIN: 'gitlab.fr/'
+
+  ### Domain of the GitLab container registry (used for pushing/pulling images).
+  ### Example: 'registry.gitlab.fr/'
+  REGISTRY_DOMAIN: 'registry.gitlab.fr/'
+
+  ### Namespace containing CI/CD.
+  CICD_NAMESPACE: ''
+
+  ### Tags used to select which GitLab runners will execute the jobs in build pipeline.
+  ### Example: 'docker' (to use Docker runners)
+  RUNNER_TAGS: ''
+
+  #=======================================================#
+  #============== Builder script variables ===============#
+  #=======================================================#
+
+  ###Dockerhub user used to pull dockerhub image.
+  DOCKERHUB_USER: "user"
+
+  #=======================================================#
+  #=============== Script python variables ===============#
+  #=======================================================#
+
+  ### Enable deployment.
+  ### Default: False
+  ENABLE_DEPLOY: False
+  
+  #=============== Setup Script variables ================#
+
+  ### Path to the GitLab CI configuration used for setup.
+  ### Default: ".gitlab-ci.yml@cicd/cicd-yaml"
+  SETUP_GITLAB_CI_CONFIG_PATH: ".gitlab-ci.yml@cicd/cicd-yaml"
+
+  ### Username for the GitLab account used during setup.
+  ### Default: "admin.gitlab"
+  SETUP_GITLAB_ACCOUNT_USERNAME: "admin.gitlab"
+
+
+  #=======================================================#
+  #=== Docker build variables (Depending your project) ===#
+  #=======================================================#
+
+  ### Put your varibles here
