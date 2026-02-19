@@ -27,7 +27,7 @@ fill-jsonnet-from-python:
     - python3 -m ${PYTHON_BUILD_DOCKER_SCRIPT_PACKAGE}
       --path ../
       --generate-jsonnet 
-      --generate-jsonnet-destination-file ${JSONNET_SRC} 
+      --generate-jsonnet-destination-file ../${JSONNET_SRC} 
       --generate-jsonnet-current-repo ${CI_PROJECT_NAME} 
       --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH}
       --generate-jsonnet-pipeline-folder ../${CI_PIPELINE_FOLDER_PATH}

@@ -118,10 +118,10 @@ variables:
   CHANGES_INFO: 'changes.txt'
 
   ### Path to the Jsonnet pipelines created by python script used for pipeline creation.
-  CI_PIPELINE_FOLDER_PATH: "build_docker/jsonnet/pipelines"
+  CI_PIPELINE_FOLDER_PATH: "cicd-script/build_docker/jsonnet/pipelines"
 
   ### Path to the yaml pipelines created by jsonnet script used for launching pipeline.
-  CI_PIPELINE_YAML_FOLDER_PATH: "build_docker/pipelines_yaml"
+  CI_PIPELINE_YAML_FOLDER_PATH: "cicd-script/build_docker/pipelines_yaml"
 
   ### Path to the package Python clean_registry project.
   PYTHON_CLEAN_REGISTRY_SCRIPT_PACKAGE: "clean_registry.main"
