@@ -109,7 +109,7 @@ variables:
   PYTHON_BUILD_DOCKER_SCRIPT_PACKAGE: 'build_docker.main'
 
   ### Path to the script launched before building executed in CI/CD.
-  BEFORE_SCRIPT_PATH: 'build_docker/before_script/before_script.sh'
+  BEFORE_SCRIPT_PATH: 'cicd-script/build_docker/before_script/before_script.sh'
 
   ### Path to the Jsonnet source file used for pipeline configuration.
   JSONNET_SRC: 'cicd-script/build_docker/jsonnet/.gitlab-ci.jsonnet'
