@@ -13,7 +13,7 @@ include:
           project: "${CICD_CONFIGURATION_PATH}"
           ref: main
   - project: "${CICD_CONFIGURATION_PATH}"
-    ref: ht-issues
+    ref: main
     file: "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
     rules:
       - exists:
