@@ -112,7 +112,7 @@ variables:
   BEFORE_SCRIPT_PATH: 'build_docker/before_script/before_script.sh'
 
   ### Path to the Jsonnet source file used for pipeline configuration.
-  JSONNET_SRC: 'build_docker/jsonnet/.gitlab-ci.jsonnet'
+  JSONNET_SRC: 'cicd-script/build_docker/jsonnet/.gitlab-ci.jsonnet'
   
   ### Path to a file where detected changes (git diff, etc.) are logged.
   CHANGES_INFO: 'changes.txt'
