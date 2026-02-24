@@ -2,14 +2,14 @@
 
 ## Prérequis
 
-Pour pouvoir utiliser le module build-docker, il faut d'abord respecter ces étapes :
+Pour pouvoir utiliser le module build-docker, il faut d'abord respecter ces étapes :  
 
-1) Avoir cicd-configuration de configurer avec les variables ci suivantes : 
-* **DOCKERHUB_TOKEN** : Un token d'accès à dockerhub qui permet le pull des images
-* **CICD_GITLAB_ADMIN_TOKEN** : Un token utilisateur admin de gitlab pour permettre la configuration des projets. A savoir qu'on peut changer son nom dans la configuration avec la variable `SETUP_GITLAB_TOKEN_NAME`.
-* **CICD_CONFIGURATION_PATH** : Le chemin du projet cicd-configuration (ex : `cicd/cicd-configuration`).
+1) Avoir cicd-configuration de configurer avec les variables ci suivantes :   
+* **DOCKERHUB_TOKEN** : Un token d'accès à dockerhub qui permet le pull des images  
+* **CICD_GITLAB_ADMIN_TOKEN** : Un token utilisateur admin de gitlab pour permettre la configuration des projets. A savoir qu'on peut changer son nom dans la configuration avec la variable `SETUP_GITLAB_TOKEN_NAME`.  
+* **CICD_CONFIGURATION_PATH** : Le chemin du projet cicd-configuration (ex : `cicd/cicd-configuration`).  
 
-2) Avoir rentrer son projet dans le fichier `setup/build.yml` en respectant la documentation.
+2) Avoir rentrer son projet dans le fichier `setup/build.yml` en respectant la documentation.  
 
 ## Lancement
 

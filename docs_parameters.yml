@@ -6,5 +6,5 @@ nav:
         - Modules CI :
           - Build-docker : docs/modules/BUILD_DOCKER.md
         - Installation de la CI dans un Gitlab : docs/INIT.md
-        - Configuration d'un projet pour build des dockers : docs/BUILD_SETUP.md
-        - Configuration d'un projet pour trigger d'autres projets : docs/TRIGGER_SETUP.md
+        - Configuration d'un projet pour build des dockers : docs/setup/BUILD_SETUP.md
+        - Configuration d'un projet pour trigger d'autres projets : docs/setup/TRIGGER_SETUP.md

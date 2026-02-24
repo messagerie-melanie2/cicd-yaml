@@ -79,11 +79,11 @@ Pour configurer un projet afin qu'il puisse trigger un autre projet, dans le dos
 
 #### Explication
 
-Il est possible de rajouter un fichier `trigger_parameters.yml` à la racine du projet afin de pouvoir configurer directement vos triggers.
+Il est possible de rajouter un fichier `trigger_parameters.yml` à la racine du projet afin de pouvoir configurer directement vos triggers.  
 
-**Pré-requis** : Avoir au préalable fait l'étape de Mise en place dans le projet cicd-trigger.
+**Pré-requis** : Avoir au préalable fait l'étape de Mise en place dans le projet cicd-trigger.  
 
-Votre fichier `trigger_parameters.yml` peut avoir la forme suivante :
+Votre fichier `trigger_parameters.yml` peut avoir la forme suivante :  
 
 ```yaml
 - name: "NOM_DE_MON_PROJET_A_TRIGGER" #ou "NOM_DE_MA_PIPELINE_JENKINS"
