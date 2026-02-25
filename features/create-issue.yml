@@ -14,4 +14,5 @@ create-issue:
     - python3 -m ${PYTHON_CREATE_ISSUE_SCRIPT}
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_GMCD_TOKEN}
+      --project-dir ${CI_PROJECT_DIR}
     
