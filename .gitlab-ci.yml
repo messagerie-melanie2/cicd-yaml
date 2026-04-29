@@ -53,6 +53,10 @@ include:
     rules:
       - exists:
           - features/launch-script.yml
+  - local: "features/detect-debt.yml"
+    rules:
+      - exists:
+          - features/detect-debt.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
