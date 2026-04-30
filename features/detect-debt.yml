@@ -13,3 +13,4 @@ detect-debt:
     - cd ${CICD_SCRIPT_FOLDER}
     - python3 -m ${PYTHON_DETECT_DEBT_SCRIPT}
       --path ../
+      --current-repo ${CI_PROJECT_NAME}
