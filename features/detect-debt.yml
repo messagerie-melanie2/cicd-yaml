@@ -14,3 +14,5 @@ detect-debt:
     - python3 -m ${PYTHON_DETECT_DEBT_SCRIPT}
       --path ../
       --current-repo ${CI_PROJECT_NAME}
+      --project-id ${CI_PROJECT_ID}
+      --token ${CICD_API_TOKEN}
