@@ -180,6 +180,11 @@ variables:
   ### Values: https://docs.python.org/3/library/logging.html#levels
   #CLEAN_LOG_LOG_LEVEL: "INFO"
 
+  
+  ### Log level for detect_debt feature.
+  ### Values: https://docs.python.org/3/library/logging.html#levels
+  #DETECT_DEBT_LOG_LEVEL: "INFO"
+
   #=======================================================#
   #============== Builder script variables ===============#
   #=======================================================#
@@ -264,6 +269,24 @@ variables:
   ### Enable deployment.
   ### Default: False
   #ENABLE_DEPLOY: False
+
+  #============ Detect-debt Script variables ============#
+  
+  ### Log level of the detect_debt feature
+  #### Default: "INFO" 
+  # DETECT_DEBT_LOG_LEVEL: "INFO"
+
+  ### Title of the issue created
+  ### Default:"[Technical debt]" 
+  # DETECT_DEBT_ISSUE_TITLE: "[Technical debt]"
+  
+  ### Label of the issue created
+  ### Default: "En développement"
+  # DETECT_DEBT_ISSUE_LABEL: "En développement"
+  
+  ### Username of the issue's assignee
+  ### Default: ""
+  # DETECT_DEBT_ISSUE_ASSIGNEE_USERNAME: "" 
   
   #=============== Deploy Script variables ===============#
 
@@ -461,3 +484,4 @@ variables:
   #=======================================================#
 
   ### Put your varibles here
+  #  #============ Build-docker Script variables ============#
