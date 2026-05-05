@@ -1,0 +1,18 @@
+detect-debt:
+  stage: manage
+  rules:
+    - if: $LAUNCH_FEATURE =~ /detect-debt/
+      when: always
+    - when: never
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_DETECT_DEBT_SCRIPT}
+      --path ../
+      --current-repo ${CI_PROJECT_NAME}
+      --project-id ${CI_PROJECT_ID}
+      --token ${CICD_API_TOKEN}

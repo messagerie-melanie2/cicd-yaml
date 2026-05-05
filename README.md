@@ -72,6 +72,7 @@ Chaque fichier inclus contient uniquement la configuration nécessaire à une fo
 * **setup-project.yml** : Configuration des projets pour permettre les différentes features (Build et Trigger).
 * **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab.
 * **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab.
+* **detect-debt.yml** : Analyse périodique de la dette technique du à la montée de version de certaines images et pas de leurs enfants.
 
 ### Arguments spécifiques
 

@@ -138,6 +138,8 @@ variables:
   ### Path to the package Python cleanlog project.
   PYTHON_CREATE_ISSUE_SCRIPT: "create_issue.main"
 
+  ## Path to the package Python detectbet project.
+  PYTHON_DETECT_DEBT_SCRIPT: "detect_debt.main" 
   #============== Default value variables ================#
   
   ### Default value necessary for the trigger feature (project-level trigger).
@@ -154,7 +156,7 @@ variables:
 
   #================== Features variables =================#
 
-  ### Git branch to pull git project containing CI/CD related scripts (e.g., production branch).
+  ### Specifying cicd-script branch to pull from, getting CI/CD related scripts (e.g., production branch).
   ### Example: 'prod'
   CI_BRANCH_TO_PULL: 'main'
 
