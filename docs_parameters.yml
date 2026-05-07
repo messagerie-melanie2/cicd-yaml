@@ -5,6 +5,7 @@ nav:
         - GitLab CI Présentation : README.md
         - Modules CI :
           - Build-docker : docs/modules/BUILD_DOCKER.md
+          - Detect-debt : docs/modules/DETECT_DEBT.md
         - Installation de la CI dans un Gitlab : docs/INIT.md
         - Configuration d'un projet pour build des dockers : docs/setup/BUILD_SETUP.md
         - Configuration d'un projet pour trigger d'autres projets : docs/setup/TRIGGER_SETUP.md
