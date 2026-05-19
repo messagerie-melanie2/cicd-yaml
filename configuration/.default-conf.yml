@@ -138,7 +138,7 @@ variables:
   ### Path to the package Python cleanlog project.
   PYTHON_CREATE_ISSUE_SCRIPT: "create_issue.main"
 
-  ## Path to the package Python detectbet project.
+  ## Path to the package Python detectdebt project.
   PYTHON_DETECT_DEBT_SCRIPT: "detect_debt.main" 
   #============== Default value variables ================#
   
@@ -179,7 +179,6 @@ variables:
   ### Log level for clean_log feature.
   ### Values: https://docs.python.org/3/library/logging.html#levels
   #CLEAN_LOG_LOG_LEVEL: "INFO"
-
   
   ### Log level for detect_debt feature.
   ### Values: https://docs.python.org/3/library/logging.html#levels
@@ -271,22 +270,48 @@ variables:
   #ENABLE_DEPLOY: False
 
   #============ Detect-debt Script variables ============#
-  
-  ### Log level of the detect_debt feature
-  #### Default: "INFO" 
-  # DETECT_DEBT_LOG_LEVEL: "INFO"
 
-  ### Title of the issue created
-  ### Default:"[Technical debt]" 
-  # DETECT_DEBT_ISSUE_TITLE: "[Technical debt]"
-  
-  ### Label of the issue created
-  ### Default: "En développement"
-  # DETECT_DEBT_ISSUE_LABEL: "En développement"
-  
-  ### Username of the issue's assignee
+  #---------- Internal debt ----------#
+
+  ### Title of the GitLab issue created for internal technical debt.
+  ### Default: "[Internal technical debt]"
+  # DETECT_INTERNAL_DEBT_ISSUE_TITLE: "[Internal technical debt]"
+
+  ### Label applied to the internal debt issue.
+  ### Default: "En prod"
+  # DETECT_INTERNAL_DEBT_ISSUE_LABEL: "En prod"
+
+  ### Username of the internal debt issue's assignee.
   ### Default: ""
-  # DETECT_DEBT_ISSUE_ASSIGNEE_USERNAME: "" 
+  # DETECT_INTERNAL_DEBT_ISSUE_ASSIGNEE_USERNAME: ""
+
+  ### Enable or disable issue creation/update for internal debt.
+  ### Default: True
+  # DETECT_INTERNAL_DEBT_ACTIVATE_ISSUE: True
+
+  #---------- External debt ----------#
+
+  ### Title of the GitLab issue created for external technical debt.
+  ### Default: "[External technical debt]"
+  # DETECT_EXTERNAL_DEBT_ISSUE_TITLE: "[External technical debt]"
+
+  ### Label applied to the external debt issue.
+  ### Default: "En prod"
+  # DETECT_EXTERNAL_DEBT_ISSUE_LABEL: "En prod"
+
+  ### Username of the external debt issue's assignee.
+  ### Default: ""
+  # DETECT_EXTERNAL_DEBT_ISSUE_ASSIGNEE_USERNAME: ""
+
+  ### Enable or disable issue creation/update for external debt.
+  ### Default: True
+  # DETECT_EXTERNAL_DEBT_ACTIVATE_ISSUE: True
+
+  ### Enable dirty comparison for external debt detection.
+  ### When enabled, a tag is considered up-to-date if it shares the same base version as latest
+  ### (e.g. "13.4-slim" matches "13.4").
+  ### Default: True
+  # DETECT_EXTERNAL_DEBT_ACTIVATE_DIRTY_COMPARAISON: True
   
   #=============== Deploy Script variables ===============#
 
