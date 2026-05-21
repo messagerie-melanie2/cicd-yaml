@@ -269,6 +269,34 @@ variables:
   ### Default: False
   #ENABLE_DEPLOY: False
 
+  ### Docker builder argument option syntax.
+  ### Default: '--opt build-arg:'
+  #DOCKER_BUILD_ARG_OPTION: '--opt build-arg:'
+
+  ### Name of the variable containing registry domain used for pulling image during build.
+  ### Default: 'CI_REGISTRY'
+  #BUILD_DOCKER_CI_PULL_REGISTRY_VARIABLE_NAME: 'CI_REGISTRY'
+
+  ### Username needed for registry used for pulling image during build.
+  ### Default: 'cijobtoken'
+  #BUILD_DOCKER_CI_PULL_REGISTRY_USERNAME: 'cijobtoken'
+  
+  ### Name of the variable containing registry password used for pulling image during build.
+  ### Default: 'CI_REGISTRY_PASSWORD'
+  #BUILD_DOCKER_CI_PULL_REGISTRY_PASSWORD_VARIABLE_NAME: 'CI_REGISTRY_PASSWORD'
+  
+  ### Name of the variable containing registry domain used for pushing image during build.
+  ### Default: 'CI_REGISTRY'
+  #BUILD_DOCKER_CI_PUSH_REGISTRY_VARIABLE_NAME: 'CI_REGISTRY'
+  
+  ### Username needed for registry used for pushing image during build.
+  ### Default: 'cijobtoken'
+  #BUILD_DOCKER_CI_PUSH_REGISTRY_USERNAME: 'cijobtoken'
+  
+  ### Name of the variable containing registry password used for pushing image during build.
+  ### Default: 'CI_REGISTRY_PASSWORD'
+  #BUILD_DOCKER_CI_PUSH_REGISTRY_PASSWORD_VARIABLE_NAME: 'CI_REGISTRY_PASSWORD'
+
   #============ Detect-debt Script variables ============#
 
   #---------- Internal debt ----------#
