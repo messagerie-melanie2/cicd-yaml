@@ -343,7 +343,7 @@ variables:
 
   ### Enable or disable "Up to date issue" table creation/update for external debt.
   ### Default: False
-  # DETECT_EXTERNAL_DEBT_ACTIVATE_ISSUE: False
+  # DETECT_EXTERNAL_DEBT_ACTIVATE_UP_TO_DATE_TABLE : False
 
   #=============== Deploy Script variables ===============#
 
