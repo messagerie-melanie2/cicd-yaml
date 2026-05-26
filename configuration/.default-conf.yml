@@ -312,7 +312,11 @@ variables:
   ### (e.g. "13.4-slim" matches "13.4").
   ### Default: True
   # DETECT_EXTERNAL_DEBT_ACTIVATE_DIRTY_COMPARAISON: True
-  
+
+  ### Enable or disable "Up to date issue" table creation/update for external debt.
+  ### Default: False
+  # DETECT_EXTERNAL_DEBT_ACTIVATE_ISSUE: False
+
   #=============== Deploy Script variables ===============#
 
   ### Mapping of environment names to their Jenkins webhook trigger URLs.
