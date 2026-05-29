@@ -134,7 +134,7 @@ Dans `cicd-configuration/setup/build.yml`, ajouter un schedule de type `detectde
 |----|----|----|----|----|
 | `path/to/Dockerfile` | `13.4-slim` | `13.4-slim, 13.4` | `13, 13.4, 13.4.0` | `- path/child` |
 
-**Dockerhub API fail** — regroupe deux cas distincts dans le code (`get_external_debt_description`, branche `else` du `if latest_tag_info`) : requête API échouée (`last_page_requested == 0` après appel) ET tag `latest` introuvable dans les résultats. Les deux alimentent `description_failed`. À séparer en deux tableaux si besoin de les distinguer.
+**Dockerhub API fail** — images pour lesquelles l'API DockerHub n'a pas répondu :
 
 | Dockerfile | Version actuel |
 |----|----|
