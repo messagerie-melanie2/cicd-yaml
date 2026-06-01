@@ -317,6 +317,10 @@ variables:
   ### Default: True
   # DETECT_INTERNAL_DEBT_ACTIVATE_ISSUE: True
 
+  ### Enable or disable the detect-internal-debt job.
+  ### Default: True
+  # DETECT_INTERNAL_DEBT_ACTIVATE_JOB: True
+
   #---------- External debt ----------#
 
   ### Title of the GitLab issue created for external technical debt.
@@ -340,6 +344,10 @@ variables:
   ### (e.g. "13.4-slim" matches "13.4").
   ### Default: True
   # DETECT_EXTERNAL_DEBT_ACTIVATE_DIRTY_COMPARAISON: True
+
+  ### Enable or disable the detect-external-debt job.
+  ### Default: True
+  # DETECT_EXTERNAL_DEBT_ACTIVATE_JOB: True
 
   ### Enable or disable "Up to date issue" table creation/update for external debt.
   ### Default: False
@@ -484,15 +492,26 @@ variables:
                 "CI_COMMIT_MESSAGE": "[cleandevimage] Daily cleaning 'DEV' - ci-clean-dev"
             }
         },
-        "detectdebt": 
+        "detectdebtinterne":
         {
-            "description": "[detect-debt] Détection de dette technique interne", 
-            "cron": "0 2 * * 5", 
+            "description": "[detect-debt] Détection de dette technique interne",
+            "cron": "0 2 * * 5",
             "cron_timezone": "Europe/Paris",
             "branch": "refs/heads/main",
             "variables":
             {
-                "LAUNCH_FEATURE": "detect-debt"
+                "LAUNCH_FEATURE": "detect-debt-interne"
+            }
+        },
+        "detectdebtexterne":
+        {
+            "description": "[detect-debt] Détection de dette technique externe",
+            "cron": "0 3 * * 5",
+            "cron_timezone": "Europe/Paris",
+            "branch": "refs/heads/main",
+            "variables":
+            {
+                "LAUNCH_FEATURE": "detect-debt-externe"
             }
         }
     }

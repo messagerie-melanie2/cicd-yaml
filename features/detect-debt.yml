@@ -1,13 +1,38 @@
-detect-debt:
+detect-debt-interne:
   stage: manage
   rules:
-    - if: $LAUNCH_FEATURE =~ /detect-debt/
+    - if: $LAUNCH_FEATURE =~ /detect-debt-interne/
       when: always
     - when: never
   tags:
     - $RUNNER_TAGS
   needs:
     - get-files-from-git
+  variables:
+    DETECT_INTERNAL_DEBT_ACTIVATE_JOB: True
+    DETECT_EXTERNAL_DEBT_ACTIVATE_JOB: False
+  image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
+  script:
+    - cd ${CICD_SCRIPT_FOLDER}
+    - python3 -m ${PYTHON_DETECT_DEBT_SCRIPT}
+      --path ../
+      --current-repo ${CI_PROJECT_NAME}
+      --project-id ${CI_PROJECT_ID}
+      --token ${CICD_API_TOKEN}
+
+detect-debt-externe:
+  stage: manage
+  rules:
+    - if: $LAUNCH_FEATURE =~ /detect-debt-externe/
+      when: always
+    - when: never
+  tags:
+    - $RUNNER_TAGS
+  needs:
+    - get-files-from-git
+  variables:
+    DETECT_INTERNAL_DEBT_ACTIVATE_JOB: False
+    DETECT_EXTERNAL_DEBT_ACTIVATE_JOB: True
   image: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${PYTHON_PROCESS_PATH}:${PYTHON_PROCESS_TAG}
   script:
     - cd ${CICD_SCRIPT_FOLDER}

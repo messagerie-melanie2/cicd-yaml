@@ -58,7 +58,8 @@ flowchart LR
 Depuis GitLab → **CI/CD > Pipelines > Run pipeline**, avec la variable :
 
 ```
-LAUNCH_FEATURE = detect-debt
+LAUNCH_FEATURE = detect-debt-interne   # lance uniquement la dette interne
+LAUNCH_FEATURE = detect-debt-externe   # lance uniquement la dette externe
 ```
 
 ## Configuration
@@ -97,19 +98,26 @@ variables:
 
 ### Schedule (optionnel)
 
-Dans `cicd-configuration/setup/build.yml`, ajouter un schedule de type `detectdebt` pour le projet :
+Dans `cicd-configuration/setup/build.yml`, deux types de schedule sont disponibles : `detectdebtinterne` et `detectdebtexterne`. Ils peuvent être ajoutés indépendamment selon les besoins du projet.
 
 ```yaml
 - name: "mon-repo-docker"
   id: <project_id>
   schedule:
-    - type: "detectdebt"
+    - type: "detectdebtinterne"
       branch: "refs/heads/main"
       cron: "0 2 * * 5"
       cron_timezone: "Europe/Paris"
-      description: "[detect-debt] Détection de dette technique"
+      description: "[detect-debt] Détection de dette technique interne"
       variables:
-        LAUNCH_FEATURE: "detect-debt"
+        LAUNCH_FEATURE: "detect-debt-interne"
+    - type: "detectdebtexterne"
+      branch: "refs/heads/main"
+      cron: "0 3 * * 5"
+      cron_timezone: "Europe/Paris"
+      description: "[detect-debt] Détection de dette technique externe"
+      variables:
+        LAUNCH_FEATURE: "detect-debt-externe"
 ```
 
 ## Résultat
