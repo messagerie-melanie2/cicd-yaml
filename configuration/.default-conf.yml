@@ -492,26 +492,15 @@ variables:
                 "CI_COMMIT_MESSAGE": "[cleandevimage] Daily cleaning 'DEV' - ci-clean-dev"
             }
         },
-        "detectdebtinterne":
+        "detectdebt":
         {
-            "description": "[detect-debt] Détection de dette technique interne",
+            "description": "[detect-debt] Détection de dette technique",
             "cron": "0 2 * * 5",
             "cron_timezone": "Europe/Paris",
             "branch": "refs/heads/main",
             "variables":
             {
-                "LAUNCH_FEATURE": "detect-debt-interne"
-            }
-        },
-        "detectdebtexterne":
-        {
-            "description": "[detect-debt] Détection de dette technique externe",
-            "cron": "0 3 * * 5",
-            "cron_timezone": "Europe/Paris",
-            "branch": "refs/heads/main",
-            "variables":
-            {
-                "LAUNCH_FEATURE": "detect-debt-externe"
+                "LAUNCH_FEATURE": "detect-debt-interne,detect-debt-externe"
             }
         }
     }
