@@ -308,8 +308,8 @@ variables:
   #BUILDER_PROJECT_BRANCHS: 'main'
 
   ### Other tags to keep from cleaning.
-  ### Default: 'latest'
-  #TAG_TO_KEEP: 'latest'
+  ### Default: 'latest-main'
+  #TAG_TO_KEEP: 'latest-main'
 
   ### Repositories that need no cleaning at all (Ex: repositories taken from another registry and not build by the CI).
   ### Default: ''
