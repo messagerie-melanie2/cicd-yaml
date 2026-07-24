@@ -296,6 +296,24 @@ variables:
   ### Name of the variable containing registry password used for pushing image during build.
   ### Default: 'CI_REGISTRY_PASSWORD'
   #BUILD_DOCKER_CI_PUSH_REGISTRY_PASSWORD_VARIABLE_NAME: 'CI_REGISTRY_PASSWORD'
+  
+  #============ clean-registry Script variables ============#
+
+  ### Special keyword to indicate "no branch".
+  ### Default: 'nobranch'
+  #NO_BRANCH: 'nobranch'
+  
+  ### Branch considered as not dev branch to prevent cleaning.
+  ### Default: 'main'
+  #BUILDER_PROJECT_BRANCHS: 'main'
+
+  ### Other tags to keep from cleaning.
+  ### Default: 'latest'
+  #TAG_TO_KEEP: 'latest'
+
+  ### Repositories that need no cleaning at all (Ex: repositories taken from another registry and not build by the CI).
+  ### Default: ''
+  #REPOSITORIES_WHITELIST: ''
 
   #============ Detect-debt Script variables ============#
 
