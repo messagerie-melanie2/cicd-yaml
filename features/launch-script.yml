@@ -1,7 +1,7 @@
-launch-script:
+launch-python-script:
   stage: manage
   rules:
-    - if: $LAUNCH_FEATURE =~ /launch-script/
+    - if: $LAUNCH_FEATURE =~ /launch-python-script/
       when: always
     - when: never
   tags:
@@ -19,7 +19,7 @@ launch-script:
         cp -r ./"$CICD_SCRIPT_FOLDER"/lib/* ./"$LAUNCH_SCRIPT_FOLDER"/lib/
       fi
     - |
-      if [ "$INSTALL_OTHER_MODULE" = "no" ]; then
+      if [ "$INSTALL_OTHER_PACKAGE" = "no" ]; then
         echo "Pas de création de venv"
       else
         echo "Installation des modules"
