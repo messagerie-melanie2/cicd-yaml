@@ -57,6 +57,10 @@ include:
     rules:
       - exists:
           - features/detect-debt.yml
+  - local: "features/scan-code.yml"
+    rules:
+      - exists:
+          - features/scan-code.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
