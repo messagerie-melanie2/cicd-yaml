@@ -1,0 +1,23 @@
+scan-sonarqube:
+  stage: detect
+  image: 
+    name: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${SCAN_SONARQUBE_PATH}:${SCAN_SONARQUBE_TAG}
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    policy: pull-push
+    key: "sonar-cache-$CI_COMMIT_REF_SLUG"
+    paths:
+      - "${SONAR_USER_HOME}/cache"
+      - sonar-scanner/
+  before_script:
+    - source /entrypoint/before_scan.sh
+  script: 
+    - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
+  allow_failure: true
+  rules:
+    - if: $LAUNCH_FEATURE =~ /scan-code-sonarqube/
+      when: always
+    - when: never

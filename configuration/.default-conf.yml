@@ -71,6 +71,13 @@ variables:
   ### Example: '3.9_1.0'
   CLEAN_LOG_TAG: '3.9_1.0-prod'
 
+  ### Registry path for the clean log image.
+  SCAN_SONARQUBE_PATH: 'cicd-docker/clean-log'
+
+  ### Docker tag for the clean log image (format: <cleanlog-version>_<app-version>).
+  ### Example: '3.9_1.0'
+  SCAN_SONARQUBE_TAG: '11_1.0-prod'
+
   #================ Init Image variables =================#
 
   ### Docker version for initializing the Python image (format: <python-version>_<app-version>).

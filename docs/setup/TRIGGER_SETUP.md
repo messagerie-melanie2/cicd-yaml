@@ -4,7 +4,7 @@
 
 ### Configuration dans le projet cicd-configuration
 
-Pour comprendre comment marche le trigger et ces fonctionnalités, voir la documentation dans cicd-yaml.
+Pour comprendre comment marche le trigger et ces fonctionnalités, voir [docs/modules/TRIGGER.md](../modules/TRIGGER.md). Pour comprendre comment le module de setup applique cette configuration (tokens, variables, allowlists, schedules), voir [docs/modules/SETUP_PROJECT.md](../modules/SETUP_PROJECT.md).
 
 #### Explication
 
