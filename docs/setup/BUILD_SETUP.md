@@ -4,6 +4,8 @@
 
 ### Explication
 
+Pour comprendre comment marche le build, voir [docs/modules/BUILD_DOCKER.md](../modules/BUILD_DOCKER.md). Pour comprendre comment le module de setup applique cette configuration (Project Access Token, variables, allowlists, schedules), voir [docs/modules/SETUP_PROJECT.md](../modules/SETUP_PROJECT.md).
+
 Pour configurer un projet afin qu'il puisse build des images dockers, dans le dossier `cicd-configuration/setup/`, vous pouvez créer un fichier dedié au projet dans `setup/by_project` (ex : `setup/by_project/mon-project.build.yml`) ou tout simplement le mettre dans le fichier `build.yml`. Ce fichier doit respecter la forme suivante :
 
 ```yaml

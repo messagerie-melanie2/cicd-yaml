@@ -57,10 +57,10 @@ include:
     rules:
       - exists:
           - features/detect-debt.yml
-  - local: "features/scan-code.yml"
+  - local: "features/scan.yml"
     rules:
       - exists:
-          - features/scan-code.yml
+          - features/scan.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
@@ -114,6 +114,7 @@ stages:
   - clean
   - trigger
   - setup
+  - detect
   - build-init
   - manage
 

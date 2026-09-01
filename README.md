@@ -8,13 +8,17 @@ Ce projet utilise une **pipeline GitLab CI/CD modulaire**, organisée autour d'u
 
 ```
 .gitlab-ci.yml           # Fichier parent principal
-ci/
+features/
 ├── init.yml             # Bloc pour l'initialisation de cicd-yaml
 ├── build-docker.yml     # Bloc pour la construction des images Docker
 ├── trigger-project.yml  # Bloc pour le trigger inter-projets
 ├── setup-project.yml    # Bloc pour la configuration des projets
 ├── clean-log.yml        # Bloc pour le nettoyage des logs gitlab
 ├── clean-registry.yml   # Bloc pour le nettoyage des images Docker
+├── create-issue.yml     # Bloc pour la création d'issues Gitlab
+├── launch-script.yml    # Bloc générique pour lancer un script cicd-script à la demande
+├── detect-debt.yml      # Bloc pour la détection de dette technique interne
+├── scan.yml              # Bloc pour l'analyse de qualité de code (SonarQube)
 ```
 
 ### Fichier parent `.gitlab-ci.yml`
@@ -66,13 +70,16 @@ get-files-from-git:
 
 Chaque fichier inclus contient uniquement la configuration nécessaire à une fonctionnalité particulière :
 
-* **init.yml** : Initialisation des images python-process et jsonnet-folder pour pouvoir lancer les différentes features.
-* **build-docker.yml** : Construction des images Docker, push vers le registry et deploiement dans l'infra.
-* **trigger-project.yml** : Trigger d'un projet vers un autre projet Gitlab ou tout autre webhooks (ex: Jenkins).
-* **setup-project.yml** : Configuration des projets pour permettre les différentes features (Build et Trigger).
-* **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab.
-* **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab.
-* **detect-debt.yml** : Analyse périodique de la dette technique du à la montée de version de certaines images et pas de leurs enfants.
+* **init.yml** : Initialisation des images python-process et jsonnet-folder pour pouvoir lancer les différentes features (voir [docs/INIT.md](docs/INIT.md)).
+* **build-docker.yml** : Construction des images Docker, push vers le registry et deploiement dans l'infra (voir [docs/modules/BUILD_DOCKER.md](docs/modules/BUILD_DOCKER.md)).
+* **trigger-project.yml** : Trigger d'un projet vers un autre projet Gitlab ou tout autre webhooks (ex: Jenkins) (voir [docs/modules/TRIGGER.md](docs/modules/TRIGGER.md)).
+* **setup-project.yml** : Configuration des projets pour permettre les différentes features (Build et Trigger) (voir [docs/modules/SETUP_PROJECT.md](docs/modules/SETUP_PROJECT.md) pour le fonctionnement du module, [docs/setup/BUILD_SETUP.md](docs/setup/BUILD_SETUP.md) et [docs/setup/TRIGGER_SETUP.md](docs/setup/TRIGGER_SETUP.md) pour la configuration d'un projet).
+* **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab (voir [docs/modules/CLEAN_LOG.md](docs/modules/CLEAN_LOG.md)).
+* **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab (voir [docs/modules/CLEAN_REGISTRY.md](docs/modules/CLEAN_REGISTRY.md)).
+* **create-issue.yml** : Création automatique d'une ou plusieurs issues Gitlab depuis la pipeline, avec assignation, template de description et méta-issue optionnelle (voir [docs/modules/CREATE_ISSUE.md](docs/modules/CREATE_ISSUE.md)).
+* **launch-script.yml** : Bloc générique permettant de lancer n'importe quel module Python pouvant utiliser cicd-script à la demande, via les variables `LAUNCH_SCRIPT_MODULE` / `LAUNCH_SCRIPT_ARGUMENT` / `LAUNCH_SCRIPT_OTHER_COMMANDS`.
+* **detect-debt.yml** : Analyse périodique de la dette technique du à la montée de version de certaines images et pas de leurs enfants (voir [docs/modules/DETECT_DEBT.md](docs/modules/DETECT_DEBT.md)).
+* **scan.yml** : Analyse de qualité de code du projet via SonarQube (voir [docs/modules/SCAN.md](docs/modules/SCAN.md)).
 
 ### Arguments spécifiques
 
@@ -91,6 +98,20 @@ Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un
 #### Exemples
 - `ci-all && ci-check-before-push` pour forcer la reconstruction de toutes les images, sans les push si c'est inutile
 - `ci-clean-nobuild && ci-clean-dev` pour nettoyer les anciennes versions, et les version de dev obselète.
+
+### Features pilotées par `LAUNCH_FEATURE`
+
+D'autres features ne se basent pas sur le message de commit mais sur le contenu (une liste séparée par des virgules) de la variable `$LAUNCH_FEATURE` :
+
+| Feature | Valeur `LAUNCH_FEATURE` | Comportement associé |
+|---------|--------------------------|-----------------------|
+| Trigger | `trigger-project` | Déclenche les pipelines des projets configurés pour être trigger (valeur incluse par défaut) |
+| Détection de dette | `detect-debt` | Lance l'analyse de dette technique interne |
+| Scan de code | `scan-code-sonarqube` | Lance l'analyse SonarQube du projet |
+| Création d'issue | `create-issue` | Crée les issues Gitlab décrites par les variables `CREATE_ISSUE_ISSUE_*` |
+| Script à la demande | `launch-script` | Lance le module cicd-script (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
+
+La valeur par défaut de `LAUNCH_FEATURE` est `build-docker,trigger-project` : les autres features doivent être ajoutées explicitement (en configuration projet ou ponctuellement via **Run pipeline**), par exemple `LAUNCH_FEATURE: "build-docker,trigger-project,scan-code-sonarqube"`.
 
 ---
 
