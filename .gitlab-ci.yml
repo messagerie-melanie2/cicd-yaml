@@ -106,10 +106,10 @@ default:
     - $RUNNER_TAGS
     
 stages:
-  - detect
   - prepare
   - process
   - convert
+  - detect
   - execute
   - deploy
   - clean
