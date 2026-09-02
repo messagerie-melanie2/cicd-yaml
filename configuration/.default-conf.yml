@@ -29,7 +29,11 @@ variables:
 
   ### Variable used to launch a specific CI/CD feature.
   ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
-  LAUNCH_FEATURE: 'build-docker,trigger-project'
+  LAUNCH_FEATURE: 'build-docker,trigger-project,scan-code-sonarqube'
+
+  ### Variable used to launch a specific CI/CD feature.
+  ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
+  SONAR_HOST_URL: 'https://sonarqube.host.url'
 
   #================== Images variables ===================#
 
@@ -503,6 +507,18 @@ variables:
   ### Mapping between GitLab and Jenkins configuration variable keys.
   ### Default example: '{"gitlab": "...", "jenkins": "..."}'
   #SETUP_VARIABLE_CONFIGURATION_KEY: 'TRIGGER_CONFIGURATION'
+  
+  ### Folder path containing scan configuration files.
+  ### Default: "setup/"
+  #SETUP_SCAN_FOLDER_PATH: "setup/"
+
+  ### Suffix that identifies scan configuration files.
+  ### Default: "triggers.yml"
+  #SETUP_SCAN_FILE_ENDSWITH: "scan.yml"
+
+  ### Key name used for storing Sonarqube tokens.
+  ### Default: "SONAR_TOKEN"
+  #SETUP_SONAR_TOKEN_VARIABLE_NAME: "SONAR_TOKEN"
 
   #=============== Trigger Script variables ==============#
 
@@ -522,6 +538,9 @@ variables:
   ### Creating trigger variable based on tag in the commit message.
   ### Default: '[{"tag": "--parent-recette","name":"CI_PARENT_RECETTE"}]'
   #TRIGGER_DESCRIPTION_VARIABLES: '[{"tag": "--parent-recette","name":"CI_PARENT_RECETTE"}]'
+
+
+  #=============== Trigger Script variables ==============#
 
   #=======================================================#
   #=== Docker build variables (Depending your project) ===#
