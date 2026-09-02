@@ -1,5 +1,13 @@
 scan-sonarqube:
   stage: detect
+  rules:
+    - if: $SONAR_TOKEN == null
+      when: never
+    - if: $LAUNCH_FEATURE !~ /scan-code-sonarqube/
+      when: never
+    - when: always
+  tags:
+    - $RUNNER_TAGS
   image: 
     name: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${SCAN_SONARQUBE_PATH}:${SCAN_SONARQUBE_TAG}
     entrypoint: [""]
@@ -17,7 +25,3 @@ scan-sonarqube:
   script: 
     - sonar-scanner -Dsonar.host.url="${SONAR_HOST_URL}"
   allow_failure: true
-  rules:
-    - if: $LAUNCH_FEATURE =~ /scan-code-sonarqube/
-      when: always
-    - when: never
