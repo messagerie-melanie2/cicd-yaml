@@ -1,6 +1,6 @@
 # Setup-project module
 
-Configure automatiquement les projets GitLab (chemin du fichier de CI, variables CI/CD, tokens, allowlists de job token, schedules de pipeline) pour qu'ils puissent utiliser les modules **build-docker** et **trigger**, sans manipulation manuelle dans l'interface GitLab.
+Configure automatiquement les projets GitLab (chemin du fichier de CI, variables CI/CD, tokens, allowlists de job token, schedules de pipeline) pour qu'ils puissent utiliser les modules **build-docker**, **trigger** et **scan**, sans manipulation manuelle dans l'interface GitLab.
 
 Le module ne s'exécute que depuis le projet `cicd-configuration` : ce sont les fichiers de setup commités dans ce projet qui décrivent quels projets configurer et comment.
 
@@ -8,34 +8,36 @@ Le module ne s'exécute que depuis le projet `cicd-configuration` : ce sont les 
 
 | Projet | Rôle dans la feature |
 |--------|----------------------|
-| `cicd-yaml` | Définition des jobs (`features/setup-project.yml`), 3 jobs dans le stage `setup` |
+| `cicd-yaml` | Définition des jobs (`features/setup-project.yml`), 4 jobs dans le stage `setup` |
 | `cicd-script` | Logique Python (`setup/`) |
-| `cicd-configuration` | Fichiers de setup (`setup/*build.yml`, `setup/*triggers.yml`, `setup/by_project/*`) et variable CI/CD `GITLAB_SETUP_MODE` qui active le module |
+| `cicd-configuration` | Fichiers de setup (`setup/*build.yml`, `setup/*triggers.yml`, `setup/*scan.yml`, `setup/by_project/*`) et variable CI/CD `GITLAB_SETUP_MODE` qui active le module |
 
-Pour la configuration détaillée d'un projet (contenu des fichiers `build.yml` / `triggers.yml`, arguments possibles, exemples) :
+Pour la configuration détaillée d'un projet (contenu des fichiers `build.yml` / `triggers.yml` / `scan.yml`, arguments possibles, exemples) :
 
 - Build : voir [docs/setup/BUILD_SETUP.md](../setup/BUILD_SETUP.md)
 - Trigger : voir [docs/setup/TRIGGER_SETUP.md](../setup/TRIGGER_SETUP.md)
+- Scan : voir [docs/setup/SCAN_SETUP.md](../setup/SCAN_SETUP.md)
 
 Cette page décrit uniquement **comment le module fonctionne** une fois ces fichiers écrits.
 
 ## Déclenchement
 
-Le module est composé de 3 jobs, tous dans le stage `setup`, tous dépendants de `get-files-from-git` (pour disposer de `changes.txt`, la liste des fichiers modifiés du commit) et tous exécutés dans l'image `python-process`.
+Le module est composé de 4 jobs, tous dans le stage `setup`, tous dépendants de `get-files-from-git` (pour disposer de `changes.txt`, la liste des fichiers modifiés du commit) et tous exécutés dans l'image `python-process`.
 
 | Job | Argument passé à `setup.main` | Se lance quand… |
 |-----|-------------------------------|-----------------|
 | `setup-trigger-project` | `--setup-trigger` | un fichier `setup/**/*triggers.yml` est modifié |
 | `setup-build-project` | `--setup-build` | un fichier `setup/**/*build.yml` est modifié |
+| `setup-scan-project` | `--setup-scan` | un fichier `setup/**/*scan.yml` est modifié |
 | `setup-schedule-project` | `--setup-schedule` | un fichier `setup/**/*.yml` est modifié |
 
 Condition commune à tous les jobs : la variable `GITLAB_SETUP_MODE` ne doit pas être nulle (`if: $GITLAB_SETUP_MODE == null → when: never`). Cette variable est définie dans les paramètres CI/CD du projet `cicd-configuration` ; c'est elle qui distingue une pipeline de configuration d'une pipeline projet classique.
 
-Les trois arguments (`--setup-trigger`, `--setup-build`, `--setup-schedule`) sont **mutuellement exclusifs** (`argparse` groupe requis) : chaque job lance donc exactement une des trois branches de `main()`.
+Les quatre arguments (`--setup-trigger`, `--setup-build`, `--setup-scan`, `--setup-schedule`) sont **mutuellement exclusifs** (`argparse` groupe requis) : chaque job lance donc exactement une des quatre branches de `main()`.
 
 ```
 cd ${CICD_SCRIPT_FOLDER}
-python3 -m setup.main --setup-trigger   # ou --setup-build, ou --setup-schedule
+python3 -m setup.main --setup-trigger   # ou --setup-build, --setup-scan, ou --setup-schedule
 ```
 
 ## Fonctionnement du script
@@ -49,6 +51,7 @@ flowchart LR
     M["setup.main<br>token = CICD_GITLAB_ADMIN_TOKEN"] --> ARG{Argument ?}
     ARG -- "--setup-trigger" --> T1
     ARG -- "--setup-build" --> B1
+    ARG -- "--setup-scan" --> C1
     ARG -- "--setup-schedule" --> S1
 
     subgraph Trigger ["--setup-trigger"]
@@ -63,6 +66,12 @@ flowchart LR
         B2 --> B3["config_build_token()<br>Project Access Token CICD_API_TOKEN"]
         B3 --> B4["set_build_ci_variables()<br>ENABLE_BUILD, DOCKERHUB_TOKEN, ..."]
         B4 --> B5["set_build_allowlist()"]
+    end
+
+    subgraph Scan ["--setup-scan"]
+        C1["read_setup_files( *scan.yml )"] --> C2["set_config_path()"]
+        C2 --> C3{"'SONARQUBE' in type ?"}
+        C3 -- oui --> C4["set_sonar_scan_ci_variables()<br>écriture de la variable SONAR_TOKEN"]
     end
 
     subgraph Schedule ["--setup-schedule"]
@@ -100,6 +109,15 @@ Pour chaque entrée de `*build.yml` :
    - `DOCKERHUB_TOKEN` et `DEPLOY_TOKEN` (`masked: True`), reprises des variables d'environnement du job de setup.
    - Message sur `SETUP_CHANNEL_URL` à la première activation.
 5. `set_build_allowlist()` — ajoute dans l'allowlist du projet les instances de `SETUP_BUILD_MANDATORY_ALLOWLIST` (obligatoires pour tout projet build) puis chaque instance de `instance_to_allow`. Pour une instance de type `group`, l'autorisation est rendue bidirectionnelle (chaque projet du groupe autorise aussi le projet configuré).
+
+### Branche `--setup-scan`
+
+Pour chaque entrée de `*scan.yml` :
+
+1. `set_config_path()` — même logique que pour le build et le trigger.
+2. Si le champ `type` de l'entrée contient `"SONARQUBE"` (liste ou chaîne, testé par simple `in`), `set_sonar_scan_ci_variables()` récupère les variables CI/CD existantes du projet puis écrit la variable `SONAR_TOKEN` (nom configurable via `SETUP_SONAR_TOKEN_VARIABLE_NAME`). La valeur écrite est celle de la variable d'environnement de même nom lue sur le job de setup lui-même (`SETUP_SONAR_TOKEN`) : il faut donc que le projet `cicd-configuration` dispose déjà de cette variable (typiquement héritée d'un groupe/instance) pour pouvoir la propager aux projets scannés. Un message est envoyé sur `SETUP_CHANNEL_URL` lors de la première configuration du projet.
+
+Toute autre valeur de `type` est ignorée : aucun traitement n'est déclenché.
 
 ### Branche `--setup-schedule`
 
@@ -149,12 +167,15 @@ Lit **à la fois** `build.yml` et `triggers.yml`. Pour chaque projet :
 | `SETUP_BUILD_DEPLOY_TOKEN_VARIABLE_NAME` | `DEPLOY_TOKEN` | Variable de token de déploiement propagée aux projets build |
 | `SETUP_BUILD_SCHEDULE_TYPE` | JSON (`buildall`, `cleanghostimage`, `cleandevimage`) | Schedules par défaut supplémentaires pour les projets build |
 | `SETUP_BUILD_MANDATORY_ALLOWLIST` | `{}` | Instances à ajouter d'office dans l'allowlist de tout projet build (format `{"nom": id}`) |
+| `SETUP_SCAN_FOLDER_PATH` | `setup/` | Dossier parcouru pour trouver les fichiers de setup scan |
+| `SETUP_SCAN_FILE_ENDSWITH` | `scan.yml` | Suffixe identifiant un fichier de setup scan |
+| `SETUP_SONAR_TOKEN_VARIABLE_NAME` | `SONAR_TOKEN` | Nom de la variable CI/CD écrite sur les projets scannés, et nom de la variable d'environnement lue sur le job de setup pour en récupérer la valeur |
 
 Tous ces paramètres sont surchargeables via la configuration `cicd-configuration/configuration/.default-conf.yml` (voir les valeurs réelles utilisées en production dans ce fichier).
 
 ## Prérequis
 
-- Le projet `cicd-configuration` doit avoir la variable `GITLAB_SETUP_MODE` définie (non nulle) et les variables `CICD_GITLAB_ADMIN_TOKEN`, `CICD_CONFIGURATION_PATH`, `DOCKERHUB_TOKEN`.
+- Le projet `cicd-configuration` doit avoir la variable `GITLAB_SETUP_MODE` définie (non nulle) et les variables `CICD_GITLAB_ADMIN_TOKEN`, `CICD_CONFIGURATION_PATH`, `DOCKERHUB_TOKEN`. Pour le scan, la variable `SONAR_TOKEN` (ou le nom défini par `SETUP_SONAR_TOKEN_VARIABLE_NAME`) doit aussi être présente, sans quoi une chaîne vide est propagée aux projets scannés.
 - Son option *CI/CD configuration file* doit pointer vers `.gitlab-ci.yml@…/cicd-yaml`.
 - Le token `CICD_GITLAB_ADMIN_TOKEN` doit avoir des droits administrateur (modification de `ci_config_path`, création de tokens, gestion des allowlists et schedules sur les projets cibles).
 - Voir [docs/INIT.md](../INIT.md) pour l'initialisation complète.
@@ -165,6 +186,7 @@ Après un commit modifiant les fichiers de `setup/` :
 
 - **trigger** : chaque projet déclencheur reçoit son trigger token, sa variable `TRIGGER_CONFIGURATION` et son `ci_config_path`, et les allowlists croisées sont en place → le module trigger devient opérationnel.
 - **build** : chaque projet reçoit `CICD_API_TOKEN`, `ENABLE_BUILD = yes`, les tokens DockerHub/déploiement, son `ci_config_path` et ses allowlists → le module build-docker devient opérationnel.
+- **scan** : chaque projet listé avec `type: ["SONARQUBE"]` reçoit la variable `SONAR_TOKEN` et son `ci_config_path`. Il reste ensuite à définir `SONAR_HOST_URL`, `sonar-project.properties` et `LAUNCH_FEATURE` sur le projet cible (voir [docs/setup/SCAN_SETUP.md](../setup/SCAN_SETUP.md)) pour que le module scan devienne opérationnel.
 - **schedule** : les schedules de pipeline (nettoyage de logs, rebuild quotidien, nettoyage du registry…) sont créés ou mis à jour sur les projets, avec prise de propriété par le compte de setup.
 
 ---
