@@ -15,3 +15,4 @@ nav:
         - Installation de la CI dans un Gitlab : docs/INIT.md
         - Configuration d'un projet pour build des dockers : docs/setup/BUILD_SETUP.md
         - Configuration d'un projet pour trigger d'autres projets : docs/setup/TRIGGER_SETUP.md
+        - Configuration d'un projet pour scanner du code (SonarQube) : docs/setup/SCAN_SETUP.md
