@@ -31,8 +31,7 @@ variables:
   ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
   LAUNCH_FEATURE: 'build-docker,trigger-project,scan-code-sonarqube'
 
-  ### Variable used to launch a specific CI/CD feature.
-  ### Default: 'build-docker,trigger-project' (Always launch those two features if setup done)
+  ### Sonarqube host url to scan code.
   SONAR_HOST_URL: 'https://sonarqube.host.url'
 
   #================== Images variables ===================#
@@ -76,7 +75,7 @@ variables:
   CLEAN_LOG_TAG: '3.9_1.0-prod'
 
   ### Registry path for the clean log image.
-  SCAN_SONARQUBE_PATH: 'cicd-docker/clean-log'
+  SCAN_SONARQUBE_PATH: 'cicd-docker/sonar-scanner-cli'
 
   ### Docker tag for the clean log image (format: <cleanlog-version>_<app-version>).
   ### Example: '3.9_1.0'
