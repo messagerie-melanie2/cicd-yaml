@@ -95,7 +95,9 @@ workflow:
     # ---- LAUNCH SETUP ----
     # ----------------------
     # Avoid running if new branch (disable pipeline on a new branch create)
-    - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000" && $CI_PIPELINE_SOURCE !~ /^(schedule|web)/
+    - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"
+      when: never
+    - if: $CI_PIPELINE_SOURCE !~ /^(schedule|web)/
       when: never
     # Run in any other case
     - when: always
