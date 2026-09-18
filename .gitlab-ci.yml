@@ -97,7 +97,7 @@ workflow:
     # Avoid running if new branch (disable pipeline on a new branch create)
     - if: $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"
       when: never
-    - if: $CI_PIPELINE_SOURCE !~ /^(schedule|web)/
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: never
     # Run in any other case
     - when: always
