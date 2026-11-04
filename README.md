@@ -77,7 +77,7 @@ Chaque fichier inclus contient uniquement la configuration nécessaire à une fo
 * **clean-log.yml** : Nettoyage périodique des logs pour éviter la saturation de Gitlab (voir [docs/modules/CLEAN_LOG.md](docs/modules/CLEAN_LOG.md)).
 * **clean-registry.yml** : Nettoyage périodique des images en fonction de leurs statuts (Image plus build ou image d'une branche dev supprimé) pour éviter la saturation de Gitlab (voir [docs/modules/CLEAN_REGISTRY.md](docs/modules/CLEAN_REGISTRY.md)).
 * **create-issue.yml** : Création automatique d'une ou plusieurs issues Gitlab depuis la pipeline, avec assignation, template de description et méta-issue optionnelle (voir [docs/modules/CREATE_ISSUE.md](docs/modules/CREATE_ISSUE.md)).
-* **launch-script.yml** : Bloc générique permettant de lancer n'importe quel module Python pouvant utiliser cicd-script à la demande, via les variables `LAUNCH_SCRIPT_MODULE` / `LAUNCH_SCRIPT_ARGUMENT` / `LAUNCH_SCRIPT_OTHER_COMMANDS`.
+* **launch-script.yml** : Bloc générique permettant de lancer n'importe quel module Python pouvant utiliser cicd-script à la demande, via les variables `LAUNCH_SCRIPT_MODULE` / `LAUNCH_SCRIPT_ARGUMENT` / `LAUNCH_SCRIPT_OTHER_COMMANDS` (voir [docs/modules/LAUNCH_SCRIPT.md](docs/modules/LAUNCH_SCRIPT.md) pour le fonctionnement du module et [docs/setup/LAUNCH_SCRIPT_SETUP.md](docs/setup/LAUNCH_SCRIPT_SETUP.md) pour la configuration d'un projet).
 * **detect-debt.yml** : Analyse périodique de la dette technique du à la montée de version de certaines images et pas de leurs enfants (voir [docs/modules/DETECT_DEBT.md](docs/modules/DETECT_DEBT.md)).
 * **scan.yml** : Analyse de qualité de code du projet via SonarQube (voir [docs/modules/SCAN.md](docs/modules/SCAN.md)).
 
@@ -109,7 +109,7 @@ D'autres features ne se basent pas sur le message de commit mais sur le contenu 
 | Détection de dette | `detect-debt` | Lance l'analyse de dette technique interne |
 | Scan de code | `scan-code-sonarqube` | Lance l'analyse SonarQube du projet |
 | Création d'issue | `create-issue` | Crée les issues Gitlab décrites par les variables `CREATE_ISSUE_ISSUE_*` |
-| Script à la demande | `launch-script` | Lance le module cicd-script (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
+| Script à la demande | `launch-python-script` | Lance le module Python (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
 
 La valeur par défaut de `LAUNCH_FEATURE` est `build-docker,trigger-project` : les autres features doivent être ajoutées explicitement (en configuration projet ou ponctuellement via **Run pipeline**), par exemple `LAUNCH_FEATURE: "build-docker,trigger-project,scan-code-sonarqube"`.
 

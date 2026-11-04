@@ -12,7 +12,9 @@ nav:
           - Clean-log : docs/modules/CLEAN_LOG.md
           - Clean-registry : docs/modules/CLEAN_REGISTRY.md
           - Create-issue : docs/modules/CREATE_ISSUE.md
+          - Launch-script : docs/modules/LAUNCH_SCRIPT.md
         - Installation de la CI dans un Gitlab : docs/INIT.md
         - Configuration d'un projet pour build des dockers : docs/setup/BUILD_SETUP.md
         - Configuration d'un projet pour trigger d'autres projets : docs/setup/TRIGGER_SETUP.md
         - Configuration d'un projet pour scanner du code (SonarQube) : docs/setup/SCAN_SETUP.md
+        - Configuration d'un projet pour lancer un script Python : docs/setup/LAUNCH_SCRIPT_SETUP.md

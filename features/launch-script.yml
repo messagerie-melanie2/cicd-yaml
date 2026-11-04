@@ -15,14 +15,16 @@ launch-python-script:
         echo "Pas de récupération des modules cicd-script"
       else
         echo "Récupération des modules cicd-script..."
-        mkdir ./"$LAUNCH_SCRIPT_FOLDER"/lib/
+        mkdir -p ./"$LAUNCH_SCRIPT_FOLDER"/lib/
         cp -r ./"$CICD_SCRIPT_FOLDER"/lib/* ./"$LAUNCH_SCRIPT_FOLDER"/lib/
       fi
     - |
       if [ "$INSTALL_OTHER_PACKAGE" = "no" ]; then
-        echo "Pas de création de venv"
+        echo "Pas d'installation de paquets supplémentaires"
+      elif [ ! -f ./"$LAUNCH_SCRIPT_FOLDER"/requirements_pip ]; then
+        echo "Pas de fichier requirements_pip dans $LAUNCH_SCRIPT_FOLDER, aucun paquet supplémentaire installé"
       else
-        echo "Installation des modules"
+        echo "Installation des paquets de requirements_pip..."
         pip install --upgrade pip && pip install --no-cache-dir -r ./"$LAUNCH_SCRIPT_FOLDER"/requirements_pip
       fi
     - cd ${LAUNCH_SCRIPT_FOLDER}
