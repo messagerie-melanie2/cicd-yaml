@@ -69,7 +69,7 @@ Supprimer le secret du code ne suffit pas : il reste dans l'historique git, et t
 
 ## Déclenchement
 
-Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks`. La valeur n'est pas incluse par défaut. Elle peut être ajoutée ponctuellement via **Build > Pipelines > Run pipeline**, ou de façon permanente dans la configuration du projet (voir [Configuration par projet](../../README.md#configuration-par-projet)) :
+Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks`. La valeur est incluse par défaut. Elle peut aussi être ajoutée ponctuellement via **Build > Pipelines > Run pipeline**, ou dans la configuration du projet (voir [Configuration par projet](../../README.md#configuration-par-projet)) :
 
 ```yaml
 variables:
