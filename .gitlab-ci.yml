@@ -21,6 +21,15 @@ include:
             - "configuration/by_project/.${CI_PROJECT_NAME}-conf.yml"
           project: "${CICD_CONFIGURATION_PATH}"
           ref: main
+  - project: "${CICD_CONFIGURATION_PATH}"
+    ref: main
+    file: "configuration/by_path/${CI_PROJECT_NAMESPACE}/.${CI_PROJECT_NAME}-conf.yml"
+    rules:
+      - exists:
+          paths:
+            - "configuration/by_path/${CI_PROJECT_NAMESPACE}/.${CI_PROJECT_NAME}-conf.yml"
+          project: "${CICD_CONFIGURATION_PATH}"
+          ref: main
   - local: "features/init.yml"
     rules:
       - exists:

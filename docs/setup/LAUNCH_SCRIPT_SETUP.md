@@ -83,6 +83,8 @@ Si le projet est déjà déclaré (pour du build ou du trigger), passer à l'ét
 
 Créer (ou compléter) le fichier `cicd-configuration/configuration/by_project/.<nom-du-projet>-conf.yml`. Le nom doit correspondre exactement à `CI_PROJECT_NAME`, car il est inclus automatiquement par le `.gitlab-ci.yml` de `cicd-yaml`.
 
+> Si plusieurs projets portent le même nom, voir [Configuration par projet](../../README.md#configuration-par-projet) pour cibler un seul projet.
+
 ```yaml
 variables:
   # Dossier et module à lancer

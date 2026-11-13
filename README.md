@@ -66,6 +66,25 @@ get-files-from-git:
   [...]
 ```
 
+### Configuration par projet
+
+Avant les features, le `.gitlab-ci.yml` inclut les fichiers de variables du projet `cicd-configuration` (`CICD_CONFIGURATION_PATH`, branche `main`), dans cet ordre :
+
+| Ordre | Fichier | S'applique à |
+|-------|---------|--------------|
+| 1 | `configuration/.default-conf.yml` | Tous les projets |
+| 2 | `configuration/by_project/.<CI_PROJECT_NAME>-conf.yml` | Tous les projets qui portent ce **nom**, quel que soit leur groupe |
+| 3 | `configuration/by_path/<CI_PROJECT_NAMESPACE>/.<CI_PROJECT_NAME>-conf.yml` | Un seul projet, identifié par son **chemin complet** |
+
+Chaque fichier est optionnel (il n'est inclus que s'il existe). Quand une même variable est définie dans plusieurs fichiers, c'est le dernier inclus qui l'emporte : `by_path` > `by_project` > `.default-conf.yml`.
+
+`by_project` suffit tant que le nom du projet est unique. `by_path` sert quand plusieurs projets ont le même nom (ex : `PROJET/sources` et `AUTRE/sources`) :
+
+- `configuration/by_project/.sources-conf.yml` s'applique à **tous** les projets nommés `sources` ;
+- `configuration/by_path/<chemin du groupe>/PROJET/.sources-conf.yml` ne s'applique qu'à `PROJET/sources`.
+
+`CI_PROJECT_NAMESPACE` est le chemin complet du groupe parent tel qu'il apparaît dans l'URL GitLab du projet, groupes parents compris (ex : `groupe/sous-groupe/PROJET` pour le projet `groupe/sous-groupe/PROJET/sources`). Il est aussi affiché dans les logs du job `get-files-from-git`.
+
 ### Blocs YAML modulaires
 
 Chaque fichier inclus contient uniquement la configuration nécessaire à une fonctionnalité particulière :
