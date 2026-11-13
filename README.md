@@ -18,7 +18,8 @@ features/
 ├── create-issue.yml     # Bloc pour la création d'issues Gitlab
 ├── launch-script.yml    # Bloc générique pour lancer un script cicd-script à la demande
 ├── detect-debt.yml      # Bloc pour la détection de dette technique interne
-├── scan.yml              # Bloc pour l'analyse de qualité de code (SonarQube)
+├── scan.yml             # Bloc pour l'analyse de qualité de code (SonarQube)
+├── gitleaks.yml         # Bloc pour la détection de secrets (gitleaks)
 ```
 
 ### Fichier parent `.gitlab-ci.yml`
@@ -28,7 +29,7 @@ Le fichier parent est responsable de :
 * Inclure les blocs YAML spécifiques pour chaque feature via `include`
 * Definir le workflow général de la pipeline (changement de variables en fonction du type de lancement, création d'argument générique qu'on peut mettre en message de commit etc..)
 * Définir un tag par défaut pour les runners gitlab.
-* Définir les **stages** globaux de la pipeline (`prepare`, `process`, `deploy`, etc.)
+* Définir les **stages** globaux de la pipeline (voir [Stages](#stages) plus bas)
 * Définir le stage en commun entre toutes les features, la récupération du projet de script cicd-script :
 
 ```yaml
@@ -57,14 +58,28 @@ default:
 
 stages:
   - prepare
-  - process
-  - deploy
+  - build
   [...]
 
 get-files-from-git:
   stage: prepare
   [...]
 ```
+
+### Stages
+
+Les jobs s'enchaînent grâce à leurs `needs` (et non grâce à l'ordre des stages) : les stages servent surtout à les regrouper dans l'interface GitLab. Un job sans `needs` attend en revanche la fin de tous les stages précédents ; les jobs qui n'ont besoin de rien d'autre que le repo (scans) ont donc `needs: []` pour démarrer immédiatement.
+
+| Stage | Jobs | Feature |
+|-------|------|---------|
+| `prepare` | `get-files-from-git` | Commun à toutes les features |
+| `build` | `fill-jsonnet-from-python`, `convert-jsonnet-to-json`, `execute-jobs-from-yaml` | build-docker |
+| `quality` | `scan-sonarqube`, `gitleaks-scan` | scan, gitleaks |
+| `trigger` | `trigger` | trigger-project |
+| `maintenance` | `clean-job`, `clean-registry-*`, `create-issue`, `detect-debt-*`, `launch-python-script` | clean-log, clean-registry, create-issue, detect-debt, launch-script |
+| `admin` | `setup-*-project`, `*-init` | setup-project, init |
+
+Pour ajouter une feature, la ranger dans le stage qui correspond à son rôle plutôt que de créer un nouveau stage.
 
 ### Configuration par projet
 
@@ -99,6 +114,7 @@ Chaque fichier inclus contient uniquement la configuration nécessaire à une fo
 * **launch-script.yml** : Bloc générique permettant de lancer n'importe quel module Python pouvant utiliser cicd-script à la demande, via les variables `LAUNCH_SCRIPT_MODULE` / `LAUNCH_SCRIPT_ARGUMENT` / `LAUNCH_SCRIPT_OTHER_COMMANDS` (voir [docs/modules/LAUNCH_SCRIPT.md](docs/modules/LAUNCH_SCRIPT.md) pour le fonctionnement du module et [docs/setup/LAUNCH_SCRIPT_SETUP.md](docs/setup/LAUNCH_SCRIPT_SETUP.md) pour la configuration d'un projet).
 * **detect-debt.yml** : Analyse périodique de la dette technique du à la montée de version de certaines images et pas de leurs enfants (voir [docs/modules/DETECT_DEBT.md](docs/modules/DETECT_DEBT.md)).
 * **scan.yml** : Analyse de qualité de code du projet via SonarQube (voir [docs/modules/SCAN.md](docs/modules/SCAN.md)).
+* **gitleaks.yml** : Détection des secrets committés par erreur (tokens, mots de passe, clés...) via gitleaks (voir [docs/modules/GITLEAKS.md](docs/modules/GITLEAKS.md)).
 
 ### Arguments spécifiques
 
@@ -127,6 +143,7 @@ D'autres features ne se basent pas sur le message de commit mais sur le contenu 
 | Trigger | `trigger-project` | Déclenche les pipelines des projets configurés pour être trigger (valeur incluse par défaut) |
 | Détection de dette | `detect-debt` | Lance l'analyse de dette technique interne |
 | Scan de code | `scan-code-sonarqube` | Lance l'analyse SonarQube du projet |
+| Détection de secrets | `scan-secret-gitleaks` | Lance la recherche de secrets avec gitleaks |
 | Création d'issue | `create-issue` | Crée les issues Gitlab décrites par les variables `CREATE_ISSUE_ISSUE_*` |
 | Script à la demande | `launch-python-script` | Lance le module Python (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
 
