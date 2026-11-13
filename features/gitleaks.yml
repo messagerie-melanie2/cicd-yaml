@@ -3,7 +3,11 @@ gitleaks-scan:
   rules:
     - if: $LAUNCH_FEATURE !~ /scan-secret-gitleaks/
       when: never
-    - when: always
+    # Uniquement sur un push (commits du push), un schedule ou un lancement manuel (tout l'historique).
+    # Pas sur un trigger : le projet déclencheur a déjà scanné ses propres commits.
+    - if: $CI_PIPELINE_SOURCE =~ /^(push|schedule|web)$/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   # Démarre tout de suite, sans attendre les jobs des stages précédents

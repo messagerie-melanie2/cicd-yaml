@@ -31,7 +31,7 @@ Le job `gitleaks-scan` (stage `quality`, avec `needs: []` : il démarre dès le 
 1. Démarre l'image `${REGISTRY_DOMAIN}${CICD_NAMESPACE}${GITLEAKS_PATH}:${GITLEAKS_TAG}`.
 2. Récupère tout l'historique git du projet (`GIT_DEPTH: "0"`).
 3. Lance `/entrypoint/gitleaks_scan.sh`, qui choisit quoi scanner selon `GITLEAKS_SCAN_MODE` :
-   - **`auto`** (défaut) : sur un push, seulement les commits du push. Pour un schedule, un lancement manuel ou un trigger, tout l'historique.
+   - **`auto`** (défaut) : sur un push, seulement les commits du push. Pour un schedule ou un lancement manuel, tout l'historique.
    - **`diff`** : seulement les commits entre `CI_COMMIT_BEFORE_SHA` et `CI_COMMIT_SHA`. Si le commit précédent est introuvable (par exemple après un force push), le script scanne tout l'historique à la place.
    - **`history`** : tout l'historique git.
    - **`dir`** : seulement les fichiers présents dans le dernier commit, sans l'historique.
@@ -69,7 +69,9 @@ Supprimer le secret du code ne suffit pas : il reste dans l'historique git, et t
 
 ## Déclenchement
 
-Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks`. Le scan tourne de deux façons, sans rien à configurer côté projet :
+Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks` **et** que la pipeline vient d'un push, d'un schedule ou d'un lancement manuel (`CI_PIPELINE_SOURCE` = `push`, `schedule` ou `web`). Il ne se lance donc pas dans une pipeline déclenchée par un autre projet (`trigger`, `pipeline`), ni par l'API ou une merge request : sinon chaque trigger lancerait un scan de tout l'historique, alors que le projet déclencheur a déjà scanné ses propres commits.
+
+Le scan tourne de deux façons, sans rien à configurer côté projet :
 
 | Quand | Ce qui est scanné | Origine |
 |-------|-------------------|---------|
