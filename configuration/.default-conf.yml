@@ -81,6 +81,13 @@ variables:
   ### Example: '3.9_1.0'
   SCAN_SONARQUBE_TAG: '11_1.0-prod'
 
+  ### Registry path for the gitleaks image (secret detection).
+  GITLEAKS_PATH: 'cicd-docker/gitleaks'
+
+  ### Docker tag for the gitleaks image (format: <gitleaks-version>_<app-version>).
+  ### Example: 'v8.28.0_1.0-prod'
+  GITLEAKS_TAG: 'v8.28.0_1.0-prod'
+
   #================ Init Image variables =================#
 
   ### Docker version for initializing the Python image (format: <python-version>_<app-version>).
@@ -380,6 +387,17 @@ variables:
   ### Enable or disable "Up to date issue" table creation/update for external debt.
   ### Default: False
   # DETECT_EXTERNAL_DEBT_ACTIVATE_UP_TO_DATE_TABLE : False
+
+  #============== Gitleaks Script variables ==============#
+
+  ### What to scan: auto (commits of the push, full history otherwise), diff, history or dir (current files only).
+  ### Default: 'auto'
+  #GITLEAKS_SCAN_MODE: 'auto'
+
+  ### Extra arguments passed to gitleaks.
+  ### Example: '--max-target-megabytes 5'
+  ### Default: ''
+  #GITLEAKS_EXTRA_ARGS: ''
 
   #=============== Deploy Script variables ===============#
 
