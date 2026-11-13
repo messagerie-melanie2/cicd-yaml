@@ -454,23 +454,36 @@ variables:
 
   ### Type of schedule possible for every project using cicd-yaml.
   ### Default: ""
-  #SETUP_SCHEDULE_TYPE: """{
-  #     "cleanlog": 
-  #     {
-  #         "description": "[rotate log] Schedule de rotation de log", 
-  #         "cron": "0 0 */5 * *", 
-  #         "cron_timezone": "Europe/Paris",
-  #         "variables":
-  #         {
-  #             "CLEANLOG_WEEKS_LIMIT" : 2,
-  #             "CI_COMMIT_MESSAGE": "[cleanlog] ci-clean-log "
-  #         }
-  #     }
-  # }"""
+  SETUP_SCHEDULE_TYPE:  >
+    {
+        "cleanlog": 
+        {
+            "description": "[rotate log] Schedule de rotation de log", 
+            "cron": "0 0 */5 * *", 
+            "cron_timezone": "Europe/Paris",
+            "variables":
+            {
+                "CLEANLOG_WEEKS_LIMIT" : 2,
+                "CI_COMMIT_MESSAGE": "[cleanlog] ci-clean-log "
+            }
+        },
+        "scangitleaks": 
+        {
+            "description": "[scan] Schedule scan des leaks de secrets dans git", 
+            "cron": "0 0 */5 * *", 
+            "cron_timezone": "Europe/Paris",
+            "variables":
+            {
+                "CI_COMMIT_MESSAGE": "[scan] Schedule scan des leaks de secrets dans git",
+                "LAUNCH_FEATURE" : "scan-secret-gitleaks",
+                "GITLEAKS_SCAN_MODE": "history"
+            }
+        }
+    }
 
   ### Type of schedule mandatory for every project using cicd-yaml.
   ### Default: ""
-  #SETUP_SCHEDULE_MANDATORY = "cleanlog"
+  SETUP_SCHEDULE_MANDATORY: "cleanlog,scangitleaks"
 
   ### Folder path containing the setup build jobs.
   ### Default: "setup/"

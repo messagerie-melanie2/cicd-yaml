@@ -123,7 +123,7 @@ Toute autre valeur de `type` est ignorée : aucun traitement n'est déclenché.
 
 Lit **à la fois** `build.yml` et `triggers.yml`. Pour chaque projet :
 
-1. `config_schedule()` — part des schedules par défaut (`SETUP_SCHEDULE_TYPE`, plus `SETUP_BUILD_SCHEDULE_TYPE` pour les projets build) et applique les surcharges du bloc `schedule:` du YAML (cron, branche, variables…). Les schedules listés dans `SETUP_SCHEDULE_MANDATORY` (par défaut `cleanlog`) sont toujours ajoutés. La branche par défaut est la branche par défaut du projet si aucune n'est précisée ; la description est préfixée par `[<branche>]`.
+1. `config_schedule()` — part des schedules par défaut (`SETUP_SCHEDULE_TYPE`, plus `SETUP_BUILD_SCHEDULE_TYPE` pour les projets build) et applique les surcharges du bloc `schedule:` du YAML (cron, branche, variables…). Les schedules listés dans `SETUP_SCHEDULE_MANDATORY` (`cleanlog` pour la rotation des logs et `scangitleaks` pour la [détection de secrets](GITLEAKS.md#schedule-obligatoire-scangitleaks)) sont toujours ajoutés. Chaque type listé doit exister dans `SETUP_SCHEDULE_TYPE`, sinon le setup échoue. La branche par défaut est la branche par défaut du projet si aucune n'est précisée ; la description est préfixée par `[<branche>]`.
 2. `set_schedule()` — pour chaque schedule calculé :
    - récupère les schedules existants du projet ; si un schedule porte la même description il est **mis à jour**, sinon il est **créé** ;
    - si un schedule appartient à un autre utilisateur que `SETUP_GITLAB_ACCOUNT_USERNAME`, le compte de setup en **prend la propriété** (`take_ownership`) ;
@@ -149,8 +149,8 @@ Lit **à la fois** `build.yml` et `triggers.yml`. Pour chaque projet :
 | `SETUP_GITLAB_ACCOUNT_USERNAME` | `admin.gitlab` | Compte propriétaire attendu des tokens de trigger et des schedules |
 | `SETUP_CICD_CONFIGURATION_PATH_VARIABLE_NAME` | `CICD_CONFIGURATION_PATH` | Nom de la variable de chemin vers `cicd-configuration` propagée aux projets |
 | `SETUP_CHANNEL_URL` | `""` | Webhook de notification (message à la première activation d'un projet) |
-| `SETUP_SCHEDULE_TYPE` | JSON (`cleanlog`) | Schedules par défaut communs à tous les projets |
-| `SETUP_SCHEDULE_MANDATORY` | `["cleanlog"]` | Schedules toujours créés, quelle que soit la config projet |
+| `SETUP_SCHEDULE_TYPE` | JSON (`cleanlog`, `scangitleaks`) | Schedules par défaut communs à tous les projets |
+| `SETUP_SCHEDULE_MANDATORY` | `"cleanlog,scangitleaks"` | Schedules toujours créés, quelle que soit la config projet |
 | `SETUP_DEFAULT_SCHEDULE` | JSON vide | Gabarit utilisé pour un `type` de schedule inconnu |
 | `SETUP_TRIGGER_FILE_ENDSWITH` | `triggers.yml` | Suffixe identifiant un fichier de setup trigger |
 | `SETUP_TRIGGER_DESCRIPTION` | `Trigger cree par L'administrateur` | Description des trigger tokens créés |
@@ -187,6 +187,6 @@ Après un commit modifiant les fichiers de `setup/` :
 - **trigger** : chaque projet déclencheur reçoit son trigger token, sa variable `TRIGGER_CONFIGURATION` et son `ci_config_path`, et les allowlists croisées sont en place → le module trigger devient opérationnel.
 - **build** : chaque projet reçoit `CICD_API_TOKEN`, `ENABLE_BUILD = yes`, les tokens DockerHub/déploiement, son `ci_config_path` et ses allowlists → le module build-docker devient opérationnel.
 - **scan** : chaque projet listé avec `type: ["SONARQUBE"]` reçoit la variable `SONAR_TOKEN` et son `ci_config_path`. Il reste ensuite à définir `SONAR_HOST_URL`, `sonar-project.properties` et `LAUNCH_FEATURE` sur le projet cible (voir [docs/setup/SCAN_SETUP.md](../setup/SCAN_SETUP.md)) pour que le module scan devienne opérationnel.
-- **schedule** : les schedules de pipeline (nettoyage de logs, rebuild quotidien, nettoyage du registry…) sont créés ou mis à jour sur les projets, avec prise de propriété par le compte de setup.
+- **schedule** : les schedules de pipeline (nettoyage de logs et scan gitleaks sur tous les projets, rebuild quotidien et nettoyage du registry sur les projets build…) sont créés ou mis à jour sur les projets, avec prise de propriété par le compte de setup.
 
 ---

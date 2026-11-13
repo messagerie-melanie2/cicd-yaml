@@ -69,14 +69,42 @@ Supprimer le secret du code ne suffit pas : il reste dans l'historique git, et t
 
 ## Déclenchement
 
-Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks`. La valeur est incluse par défaut. Elle peut aussi être ajoutée ponctuellement via **Build > Pipelines > Run pipeline**, ou dans la configuration du projet (voir [Configuration par projet](../../README.md#configuration-par-projet)) :
+Le job ne se lance que si `LAUNCH_FEATURE` contient `scan-secret-gitleaks`. Le scan tourne de deux façons, sans rien à configurer côté projet :
+
+| Quand | Ce qui est scanné | Origine |
+|-------|-------------------|---------|
+| À chaque push | Les commits du push (mode `auto` → `diff`) | `scan-secret-gitleaks` fait partie de la valeur par défaut de `LAUNCH_FEATURE` |
+| Tous les 5 jours | Tout l'historique git (`GITLEAKS_SCAN_MODE: "history"`) | Schedule **obligatoire** `scangitleaks`, créé sur chaque projet par le module setup-project |
+
+Le scan à chaque push détecte un nouveau secret dès qu'il est poussé. Le schedule rattrape tout ce que le push ne voit pas : historique antérieur à l'activation de la feature, force push, nouvelles règles gitleaks après une montée de version de l'image.
+
+Le scan peut aussi être lancé à la main via **Build > Pipelines > Run pipeline**, avec `LAUNCH_FEATURE = scan-secret-gitleaks`, ou depuis **Build > Pipeline schedules** (bouton ▶ du schedule `scangitleaks`).
+
+### Schedule obligatoire `scangitleaks`
+
+Le schedule est défini dans `SETUP_SCHEDULE_TYPE` et listé dans `SETUP_SCHEDULE_MANDATORY` (`"cleanlog,scangitleaks"`). Le job `setup-schedule-project` le crée donc sur **tous** les projets déclarés dans les fichiers de setup (`setup/**/*build.yml` et `setup/**/*triggers.yml`), comme le schedule `cleanlog`. Voir [SETUP_PROJECT.md](SETUP_PROJECT.md#branche---setup-schedule).
+
+| Paramètre | Valeur |
+|-----------|--------|
+| Description | `[<branche>] [scan] Schedule scan des leaks de secrets dans git` |
+| Branche | Branche par défaut du projet |
+| Cron | `0 0 */5 * *` (à minuit, les 1, 6, 11, 16, 21, 26 et 31 du mois, heure de Paris) |
+| Variables | `LAUNCH_FEATURE: "scan-secret-gitleaks"`, `GITLEAKS_SCAN_MODE: "history"`, `CI_COMMIT_MESSAGE: "[scan] Schedule scan des leaks de secrets dans git"` |
+
+Comme `LAUNCH_FEATURE` ne contient que `scan-secret-gitleaks`, cette pipeline ne lance que `get-files-from-git` et `gitleaks-scan` (ni build, ni trigger, ni SonarQube).
+
+Le schedule ne peut pas être retiré d'un projet, mais ses valeurs peuvent être surchargées dans le bloc `schedule:` du projet (fichier de setup), avec `type: "scangitleaks"` et **la même branche** :
 
 ```yaml
-variables:
-  LAUNCH_FEATURE: "build-docker,trigger-project,scan-code-sonarqube,scan-secret-gitleaks"
+  projects:
+    - name: "mon-projet"
+      id: 12345
+      schedule:
+        - type: "scangitleaks"
+          cron: "0 3 * * 1"   # tous les lundis à 3h
 ```
 
-Pour scanner régulièrement tout l'historique, il est possible d'ajouter un schedule avec `LAUNCH_FEATURE: "scan-secret-gitleaks"` (en mode `auto`, un schedule scanne tout l'historique).
+> **Attention :** ce schedule lance un scan de tout l'historique, qui peut être long sur un gros repo. Si besoin, limiter la taille des fichiers scannés avec `GITLEAKS_EXTRA_ARGS` (ex : `--max-target-megabytes 5`) dans les variables du schedule.
 
 ## Variables
 
@@ -84,7 +112,7 @@ Pour scanner régulièrement tout l'historique, il est possible d'ajouter un sch
 |----------|--------|------|
 | `GITLEAKS_PATH` | `cicd-docker/gitleaks` | Chemin de l'image dans le registry |
 | `GITLEAKS_TAG` | `v8.28.0_1.0-prod` | Tag de l'image (`<version gitleaks>_<version image>`) |
-| `GITLEAKS_SCAN_MODE` | `auto` | `auto`, `diff`, `history` ou `dir` (voir plus haut) |
+| `GITLEAKS_SCAN_MODE` | `auto` (`history` dans le schedule `scangitleaks`) | `auto`, `diff`, `history` ou `dir` (voir plus haut) |
 | `GITLEAKS_EXTRA_ARGS` | vide | Arguments gitleaks supplémentaires (ex : `--max-target-megabytes 5`) |
 | `GITLEAKS_REPORT_PATH` | `gitleaks-report.xml` | Chemin du rapport JUnit (défini dans le job, à ne pas modifier) |
 

@@ -147,7 +147,9 @@ D'autres features ne se basent pas sur le message de commit mais sur le contenu 
 | Création d'issue | `create-issue` | Crée les issues Gitlab décrites par les variables `CREATE_ISSUE_ISSUE_*` |
 | Script à la demande | `launch-python-script` | Lance le module Python (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
 
-La valeur par défaut de `LAUNCH_FEATURE` est `build-docker,trigger-project` : les autres features doivent être ajoutées explicitement (en configuration projet ou ponctuellement via **Run pipeline**), par exemple `LAUNCH_FEATURE: "build-docker,trigger-project,scan-code-sonarqube"`.
+La valeur par défaut de `LAUNCH_FEATURE` est `build-docker,trigger-project,scan-code-sonarqube,scan-secret-gitleaks` : les autres features doivent être ajoutées explicitement (en configuration projet ou ponctuellement via **Run pipeline**), par exemple `LAUNCH_FEATURE: "build-docker,trigger-project,create-issue"`.
+
+En plus du scan à chaque push, la détection de secrets tourne via un **schedule obligatoire** `scangitleaks` qui scanne tout l'historique de chaque projet tous les 5 jours (voir [docs/modules/GITLEAKS.md](docs/modules/GITLEAKS.md#schedule-obligatoire-scangitleaks)).
 
 ---
 
