@@ -44,6 +44,7 @@ flowchart LR
 - La variable `TRIGGER_CONFIGURATION` doit être définie (sinon le job est `when: never`).
 - Le projet doit être déclaré dans `cicd-configuration/setup/triggers.yml` (ou `setup/by_project/<projet>.triggers.yml`) — voir [docs/setup/TRIGGER_SETUP.md](../setup/TRIGGER_SETUP.md).
 - Le job dépend de `get-files-from-git` pour disposer du fichier `changes.txt` (fichiers modifiés du commit).
+- **Triggers en chaîne** (A → B → C) : le projet intermédiaire B doit être autorisé dans les permissions de job token de `cicd-configuration`, sinon le pipeline de C échoue avec `include:rules:exists:project ... not found or access denied`. Voir la section « Triggers en chaîne » de [docs/setup/TRIGGER_SETUP.md](../setup/TRIGGER_SETUP.md).
 
 ## Déclenchement
 

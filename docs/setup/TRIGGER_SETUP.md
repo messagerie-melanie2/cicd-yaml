@@ -118,4 +118,34 @@ Les options pouvant être rajoutés sont les mêmes que dans le projet cicd-trig
     main: 'prod'
 ```
 
+## Triggers en chaîne (A → B → C)
+
+### Symptôme
+
+Un projet A déclenche un projet B, qui déclenche à son tour un projet C (ex : `suggestion-sources` → `gmcd-docs` → `mel-docker`). Le pipeline de C échoue dès sa création avec :
+
+```
+include:rules:exists:project `snum/detn/gmcd/cicd/cicd-configuration` not found or access denied
+```
+
+Le trigger direct de B vers C, lui, fonctionne. Ce comportement est apparu après une mise à jour de GitLab : la même configuration fonctionnait auparavant sans réglage supplémentaire.
+
+### Solution
+
+Autoriser le projet intermédiaire B à accéder à `cicd-configuration` avec son job token :
+
+1. Ouvrir le projet `cicd-configuration` → **Settings > CI/CD > Job token permissions**.
+2. Dans **CI/CD job token allowlist**, cliquer sur **Add** et ajouter le projet B (ex : `gmcd-docs`).
+3. Relancer la chaîne : le pipeline de C doit maintenant se créer normalement.
+
+Cette autorisation n'est **pas** faite par le module setup-project, qui ne configure que les autorisations entre projets qui se déclenchent (voir [SETUP_PROJECT.md](../modules/SETUP_PROJECT.md)). Elle est donc à ajouter à la main pour chaque nouveau projet intermédiaire d'une chaîne.
+
+> Ajouter un projet à cette liste ne lui donne pas plus d'accès qu'aujourd'hui : tous les projets qui utilisent `cicd-yaml` lisent déjà les fichiers de `cicd-configuration` via leurs `include`.
+
+### Projets intermédiaires actuellement autorisés
+
+| Projet | Chaîne concernée |
+|--------|------------------|
+| `gmcd-docs` | projets documentés → `gmcd-docs` → `mel-docker` |
+
 ---
