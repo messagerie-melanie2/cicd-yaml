@@ -13,7 +13,7 @@
 # Uses the python script to fill the missing part of the Jsonnet file
 #
 fill-jsonnet-from-python:
-  stage: process
+  stage: build
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
@@ -48,7 +48,7 @@ fill-jsonnet-from-python:
 # Translates the Jsonnet file into a YAML configuration file
 #
 convert-jsonnet-to-json:
-  stage: convert
+  stage: build
   rules:
     - *do-not-run-build-run-when-cleaning
   tags:
@@ -70,7 +70,7 @@ convert-jsonnet-to-json:
 # Uses the YAML configuration file to create and run jobs
 # 
 execute-jobs-from-yaml:
-  stage: execute
+  stage: build
   rules:
     - *do-not-run-build-run-when-cleaning
   needs:

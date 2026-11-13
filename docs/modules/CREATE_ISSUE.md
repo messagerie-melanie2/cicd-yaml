@@ -44,7 +44,7 @@ flowchart LR
 
 ## Déclenchement
 
-Le job `create-issue` (stage `manage`) se lance uniquement si `LAUNCH_FEATURE` contient `create-issue` :
+Le job `create-issue` (stage `maintenance`) se lance uniquement si `LAUNCH_FEATURE` contient `create-issue` :
 
 ```
 LAUNCH_FEATURE = create-issue

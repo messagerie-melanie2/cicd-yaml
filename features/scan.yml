@@ -1,5 +1,5 @@
 scan-sonarqube:
-  stage: detect
+  stage: quality
   rules:
     - if: $SONAR_TOKEN == null
       when: never
@@ -8,7 +8,9 @@ scan-sonarqube:
     - when: always
   tags:
     - $RUNNER_TAGS
-  image: 
+  # Démarre tout de suite, sans attendre les jobs des stages précédents
+  needs: []
+  image:
     name: ${REGISTRY_DOMAIN}${CICD_NAMESPACE}${SCAN_SONARQUBE_PATH}:${SCAN_SONARQUBE_TAG}
     entrypoint: [""]
   variables:

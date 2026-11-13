@@ -42,7 +42,7 @@ flowchart LR
 
 ## Déclenchement
 
-Le job `clean-job` (stage `clean`) se lance dès que le message de commit contient `ci-clean-log` :
+Le job `clean-job` (stage `maintenance`) se lance dès que le message de commit contient `ci-clean-log` :
 
 ```
 ci-clean-log

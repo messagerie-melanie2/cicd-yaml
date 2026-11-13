@@ -8,7 +8,7 @@ Le module ne s'exécute que depuis le projet `cicd-configuration` : ce sont les 
 
 | Projet | Rôle dans la feature |
 |--------|----------------------|
-| `cicd-yaml` | Définition des jobs (`features/setup-project.yml`), 4 jobs dans le stage `setup` |
+| `cicd-yaml` | Définition des jobs (`features/setup-project.yml`), 4 jobs dans le stage `admin` |
 | `cicd-script` | Logique Python (`setup/`) |
 | `cicd-configuration` | Fichiers de setup (`setup/*build.yml`, `setup/*triggers.yml`, `setup/*scan.yml`, `setup/by_project/*`) et variable CI/CD `GITLAB_SETUP_MODE` qui active le module |
 
@@ -22,7 +22,7 @@ Cette page décrit uniquement **comment le module fonctionne** une fois ces fich
 
 ## Déclenchement
 
-Le module est composé de 4 jobs, tous dans le stage `setup`, tous dépendants de `get-files-from-git` (pour disposer de `changes.txt`, la liste des fichiers modifiés du commit) et tous exécutés dans l'image `python-process`.
+Le module est composé de 4 jobs, tous dans le stage `admin`, tous dépendants de `get-files-from-git` (pour disposer de `changes.txt`, la liste des fichiers modifiés du commit) et tous exécutés dans l'image `python-process`.
 
 | Job | Argument passé à `setup.main` | Se lance quand… |
 |-----|-------------------------------|-----------------|

@@ -1,5 +1,5 @@
 test-build:
-  stage: build-init
+  stage: admin
   image:
     name: "${REGISTRY_DOMAIN}${CICD_NAMESPACE}${CICD_BUILDER_PATH}:${CICD_BUILDER_TAG}"
     entrypoint: [""]
@@ -31,7 +31,7 @@ test-build:
         --output type=image,name=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${NAME}:${VERSION},push=false
 
 test-build1:
-  stage: build-init
+  stage: admin
   tags:
     - $RUNNER_TAGS
   rules:

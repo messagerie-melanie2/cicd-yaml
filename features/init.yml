@@ -1,5 +1,5 @@
 reg-image-builder-init:
-  stage: build-init
+  stage: admin
   image:
     name: moby/buildkit:rootless
     entrypoint: [""]
@@ -34,7 +34,7 @@ reg-image-builder-init:
       - ./cicd-script/
 
 python-process-init:
-  stage: build-init
+  stage: admin
   tags:
     - $RUNNER_TAGS
   needs:
@@ -72,7 +72,7 @@ python-process-init:
     when: ['script_failure']
 
 jsonnet-folder-init:
-  stage: build-init
+  stage: admin
   tags:
     - $RUNNER_TAGS
   rules:

@@ -1,5 +1,5 @@
 clean-job:
-  stage: clean
+  stage: maintenance
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log/
   tags:

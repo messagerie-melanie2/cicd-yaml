@@ -17,7 +17,7 @@ Le module se déclenche à chaque push/merge d'un utilisateur sauf pour la créa
 
 ## Etapes
 
-La pipeline principale est séparé en 3 étapes : `process`, `convert`, `execute`. 
+La pipeline principale est séparée en 3 jobs, tous dans le stage `build` et enchaînés par leurs `needs` : `fill-jsonnet-from-python` (process), `convert-jsonnet-to-json` (convert), `execute-jobs-from-yaml` (execute). 
 
 La première étape `process` suit l'étape `prepare` et lance le script python correspondant qui va récuperer les informations de toutes les images docker présente dans le repo où la pipeline est lancée grâce à l'architecture général. Chaque image docker aura son parent associé (via le dernier FROM du Dockerfile) permettant de faire le lien entre chacun. Ces derniers seront séparés par couches (df0, df1 ...) où plus on est dans une couche supérieur (df1 > df0 ) et plus on a de parents. Enfin, le script crée un nouveau .jsonnet qui va permettre d'automatiquement crée un nouveau .yaml avec toutes les informations nécessaire. Si ci-all est dans le message du commit, la conversion se fera en plusieurs jsonnet pour éviter d'avoir trop de build pour une seule sous-pipeline.
 

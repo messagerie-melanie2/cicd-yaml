@@ -1,5 +1,5 @@
 launch-python-script:
-  stage: manage
+  stage: maintenance
   rules:
     - if: $LAUNCH_FEATURE =~ /launch-python-script/
       when: always

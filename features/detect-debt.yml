@@ -1,5 +1,5 @@
 detect-debt-interne:
-  stage: manage
+  stage: maintenance
   rules:
     - if: $LAUNCH_FEATURE =~ /detect-debt-interne/
       when: always
@@ -21,7 +21,7 @@ detect-debt-interne:
       --token ${CICD_API_TOKEN}
 
 detect-debt-externe:
-  stage: manage
+  stage: maintenance
   rules:
     - if: $LAUNCH_FEATURE =~ /detect-debt-externe/
       when: always

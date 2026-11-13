@@ -1,5 +1,5 @@
 create-issue:
-  stage: manage
+  stage: maintenance
   rules:
     - if: $LAUNCH_FEATURE =~ /create-issue/
       when: always

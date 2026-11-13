@@ -53,7 +53,7 @@ Quand `GET_CICD_MODULE` n'est pas à `no`, le script a accès aux modules suivan
 
 ## Déclenchement
 
-Le job `launch-python-script` (stage `manage`) se lance uniquement si `LAUNCH_FEATURE` contient **`launch-python-script`**. Cette valeur n'est pas incluse par défaut. Elle est en général passée :
+Le job `launch-python-script` (stage `maintenance`) se lance uniquement si `LAUNCH_FEATURE` contient **`launch-python-script`**. Cette valeur n'est pas incluse par défaut. Elle est en général passée :
 
 - par un **schedule** GitLab (cas le plus courant, ex : lancement quotidien ou mensuel), créé par le module setup-project ;
 - ponctuellement via **Build > Pipelines > Run pipeline**, en ajoutant la variable `LAUNCH_FEATURE = launch-python-script`.

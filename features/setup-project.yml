@@ -1,5 +1,5 @@
 setup-trigger-project:
-  stage: setup
+  stage: admin
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
@@ -16,7 +16,7 @@ setup-trigger-project:
       --setup-trigger
 
 setup-build-project:
-  stage: setup
+  stage: admin
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
@@ -33,7 +33,7 @@ setup-build-project:
       --setup-build
 
 setup-scan-project:
-  stage: setup
+  stage: admin
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
@@ -50,7 +50,7 @@ setup-scan-project:
       --setup-scan
 
 setup-schedule-project:
-  stage: setup
+  stage: admin
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never

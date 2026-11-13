@@ -44,7 +44,7 @@ Les deux modes partagent la même étape préalable : récupération de la regis
 
 ## Déclenchement
 
-Deux jobs indépendants (stage `clean`), déclenchés par tag dans le message de commit :
+Deux jobs indépendants (stage `maintenance`), déclenchés par tag dans le message de commit :
 
 | Job | Condition | Mode |
 |-----|-----------|------|

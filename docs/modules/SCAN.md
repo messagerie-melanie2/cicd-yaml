@@ -13,7 +13,7 @@ Lance une analyse de qualité de code SonarQube sur le projet à l'aide de `sona
 
 ## Fonctionnement
 
-Le job `scan-sonarqube` (stage `detect`) :
+Le job `scan-sonarqube` (stage `quality`, avec `needs: []` : il démarre dès le début de la pipeline) :
 
 1. Démarre l'image `${REGISTRY_DOMAIN}${CICD_NAMESPACE}${SCAN_SONARQUBE_PATH}:${SCAN_SONARQUBE_TAG}` (image `sonar-scanner-cli`).
 2. Met en cache le répertoire `${CI_PROJECT_DIR}/.sonar` (`SONAR_USER_HOME`) ainsi que `sonar-scanner/` via une clé de cache par branche (`sonar-cache-$CI_COMMIT_REF_SLUG`), pour accélérer les analyses successives.

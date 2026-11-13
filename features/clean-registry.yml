@@ -1,5 +1,5 @@
 clean-registry-ghost-image:
-  stage: clean
+  stage: maintenance
   rules:
     - if: $ENABLE_BUILD != 'yes'
       when: never
@@ -19,7 +19,7 @@ clean-registry-ghost-image:
       --token ${CICD_API_TOKEN}
 
 clean-registry-dev-image:
-  stage: clean
+  stage: maintenance
   rules:
     - if: $ENABLE_BUILD != 'yes'
       when: never

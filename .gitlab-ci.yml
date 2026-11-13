@@ -70,6 +70,10 @@ include:
     rules:
       - exists:
           - features/scan.yml
+  - local: "features/gitleaks.yml"
+    rules:
+      - exists:
+          - features/gitleaks.yml
 
 workflow:
   name: "$PIPELINE_DISPLAY_NAME"
@@ -116,18 +120,14 @@ default:
   tags:
     - $RUNNER_TAGS
     
+# Les jobs s'enchaînent via leurs `needs` : les stages servent surtout à les regrouper dans l'interface.
 stages:
-  - prepare
-  - process
-  - convert
-  - detect
-  - execute
-  - deploy
-  - clean
-  - trigger
-  - setup
-  - build-init
-  - manage
+  - prepare      # get-files-from-git
+  - build        # build-docker (génération puis lancement du pipeline enfant)
+  - quality      # scan-sonarqube, gitleaks-scan
+  - trigger      # trigger-project
+  - maintenance  # clean-log, clean-registry, create-issue, detect-debt, launch-script
+  - admin        # setup-project, init
 
 # Get the required files using git
 #
