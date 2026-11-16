@@ -5,8 +5,6 @@ trigger:
       when: never
     - if: $LAUNCH_FEATURE !~ /trigger-project/
       when: never
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
-      when: never
     - when: always
   tags:
     - $RUNNER_TAGS

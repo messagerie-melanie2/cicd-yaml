@@ -1,11 +1,9 @@
-# Define the "don't run build jobs when triggering cleaning jobs" as a reusable YAML anchor
+# Common rules for build jobs, as a reusable YAML anchor
 #
-.do-not-run-build-run-when-cleaning: &do-not-run-build-run-when-cleaning
+.build-docker-rules: &build-docker-rules
   - if: $ENABLE_BUILD != 'yes'
     when: never
   - if: $LAUNCH_FEATURE !~ /build-docker/
-    when: never
-  - if: $CI_COMMIT_MESSAGE =~ /ci-clean-/
     when: never
   # always run in other cases (if previous job didn't fail)
   - when: on_success
@@ -15,7 +13,7 @@
 fill-jsonnet-from-python:
   stage: build
   rules:
-    - *do-not-run-build-run-when-cleaning
+    - *build-docker-rules
   tags:
     - $RUNNER_TAGS
   needs:
@@ -50,7 +48,7 @@ fill-jsonnet-from-python:
 convert-jsonnet-to-json:
   stage: build
   rules:
-    - *do-not-run-build-run-when-cleaning
+    - *build-docker-rules
   tags:
     - $RUNNER_TAGS
   needs:
@@ -72,7 +70,7 @@ convert-jsonnet-to-json:
 execute-jobs-from-yaml:
   stage: build
   rules:
-    - *do-not-run-build-run-when-cleaning
+    - *build-docker-rules
   needs:
     - convert-jsonnet-to-json
   #

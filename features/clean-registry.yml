@@ -3,7 +3,9 @@ clean-registry-ghost-image:
   rules:
     - if: $ENABLE_BUILD != 'yes'
       when: never
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-nobuild/
+    - if: $LAUNCH_FEATURE =~ /clean-registry-ghost-image/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
@@ -23,7 +25,9 @@ clean-registry-dev-image:
   rules:
     - if: $ENABLE_BUILD != 'yes'
       when: never
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-dev/
+    - if: $LAUNCH_FEATURE =~ /clean-registry-dev-image/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:

@@ -1,7 +1,9 @@
 clean-job:
   stage: maintenance
   rules:
-    - if: $CI_COMMIT_MESSAGE =~ /ci-clean-log/
+    - if: $LAUNCH_FEATURE =~ /clean-log/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:

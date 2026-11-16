@@ -42,11 +42,13 @@ flowchart LR
 
 ## Déclenchement
 
-Le job `clean-job` (stage `maintenance`) se lance dès que le message de commit contient `ci-clean-log` :
+Le job `clean-job` (stage `maintenance`) se lance uniquement si `LAUNCH_FEATURE` contient `clean-log`. Pour un lancement ponctuel : **Build > Pipelines > Run pipeline** avec la variable :
 
 ```
-ci-clean-log
+LAUNCH_FEATURE = clean-log
 ```
+
+> L'ancien déclenchement par le message de commit `ci-clean-log` n'existe plus.
 
 ## (optionnel) Configuration du schedule
 
@@ -61,7 +63,7 @@ Il est possible de programmer un nettoyage périodique via le type de schedule `
         CLEANLOG_WEEKS_LIMIT: 2
 ```
 
-Le comportement par défaut du type `cleanlog` (défini via `SETUP_SCHEDULE_TYPE` dans `cicd-configuration`) lance un commit avec le message `[cleanlog] ci-clean-log` toutes les 5 jours.
+Le type `cleanlog` (défini via `SETUP_SCHEDULE_TYPE`) lance tous les 5 jours une pipeline avec `LAUNCH_FEATURE: "clean-log"`. C'est un schedule obligatoire (`SETUP_SCHEDULE_MANDATORY`) : il est créé sur tous les projets, le bloc ci-dessus ne sert qu'à en changer les valeurs.
 
 ### Variables (`cicd-configuration/configuration/by_project/.<projet>-conf.yml`)
 

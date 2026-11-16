@@ -44,12 +44,16 @@ Les deux modes partagent la même étape préalable : récupération de la regis
 
 ## Déclenchement
 
-Deux jobs indépendants (stage `maintenance`), déclenchés par tag dans le message de commit :
+Deux jobs indépendants (stage `maintenance`), déclenchés par la variable `LAUNCH_FEATURE` :
 
-| Job | Condition | Mode |
-|-----|-----------|------|
-| `clean-registry-ghost-image` | `ci-clean-nobuild` dans le message de commit | `--delete-ghost-image` |
-| `clean-registry-dev-image` | `ci-clean-dev` dans le message de commit | `--delete-dev-image` |
+| Job | Valeur dans `LAUNCH_FEATURE` | Mode |
+|-----|------------------------------|------|
+| `clean-registry-ghost-image` | `clean-registry-ghost-image` | `--delete-ghost-image` |
+| `clean-registry-dev-image` | `clean-registry-dev-image` | `--delete-dev-image` |
+
+Pour un lancement ponctuel : **Build > Pipelines > Run pipeline** avec, par exemple, `LAUNCH_FEATURE = clean-registry-ghost-image,clean-registry-dev-image`.
+
+> L'ancien déclenchement par le message de commit (`ci-clean-nobuild`, `ci-clean-dev`) n'existe plus.
 
 ## (optionnel) Configuration du schedule
 
@@ -59,8 +63,8 @@ Les types de schedule `cleanghostimage` et `cleandevimage` (définis par défaut
 - name: "mon-repo-docker"
   id: <project_id>
   schedule:
-    - type: "cleanghostimage"   # commit "ci-clean-nobuild" tous les jours à 2h
-    - type: "cleandevimage"     # commit "ci-clean-dev" tous les jours à 1h30
+    - type: "cleanghostimage"   # LAUNCH_FEATURE "clean-registry-ghost-image" tous les jours à 2h
+    - type: "cleandevimage"     # LAUNCH_FEATURE "clean-registry-dev-image" tous les jours à 1h30
 ```
 
 ### Variables (`cicd-configuration/configuration/by_project/.<projet>-conf.yml`)

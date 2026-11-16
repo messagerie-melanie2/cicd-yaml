@@ -48,7 +48,7 @@ flowchart LR
 
 ## Déclenchement
 
-Le job `trigger` (stage `trigger`) se lance automatiquement à chaque pipeline dès que `LAUNCH_FEATURE` contient `trigger-project` (valeur incluse par défaut), sauf si le message de commit contient `ci-clean-` (nettoyage prioritaire).
+Le job `trigger` (stage `trigger`) se lance automatiquement à chaque pipeline dès que `LAUNCH_FEATURE` contient `trigger-project` (valeur incluse par défaut). Les schedules de nettoyage fixent `LAUNCH_FEATURE` à leur seule feature : le trigger ne s'y lance donc pas.
 
 ## Variables globales du script
 

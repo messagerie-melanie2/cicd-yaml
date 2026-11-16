@@ -126,13 +126,11 @@ Si le message du commit (et donc la variable `$CI_COMMIT_MESSAGE`) contient l'un
 | Reconstruction    | `ci-all`                  | Reconstruction de toutes les images, que les fichiers associés à ces images aient été modifiés ou non|
 | Reconstruction    | `ci-check-before-push`    | Push de l'image vers la registry seulement si des différences entre l'image construite par la pipeline et l'image déjà stockée sur la registry sont constatées|
 | Reconstruction    | `ci-branch-dev`    | Lance la reconstruction sur la pipeline de développement|
-| Nettoyage         | `ci-clean-dev`            | Lancement du module clean-registry mode suppression image dev|
-| Nettoyage         | `ci-clean-nobuild`        | Lancement du module clean-registry mode suppression image no build|
-| Nettoyage         | `ci-clean-log`        | Lancement du module clean-log |
 
-#### Exemples
+#### Exemple
 - `ci-all && ci-check-before-push` pour forcer la reconstruction de toutes les images, sans les push si c'est inutile
-- `ci-clean-nobuild && ci-clean-dev` pour nettoyer les anciennes versions, et les version de dev obselète.
+
+> Les anciens arguments de nettoyage (`ci-clean-log`, `ci-clean-nobuild`, `ci-clean-dev`) n'ont plus d'effet : les nettoyages passent maintenant par `LAUNCH_FEATURE` (voir ci-dessous).
 
 ### Features pilotées par `LAUNCH_FEATURE`
 
@@ -141,13 +139,18 @@ D'autres features ne se basent pas sur le message de commit mais sur le contenu 
 | Feature | Valeur `LAUNCH_FEATURE` | Comportement associé |
 |---------|--------------------------|-----------------------|
 | Trigger | `trigger-project` | Déclenche les pipelines des projets configurés pour être trigger (valeur incluse par défaut) |
-| Détection de dette | `detect-debt` | Lance l'analyse de dette technique interne |
+| Détection de dette | `detect-debt-interne`, `detect-debt-externe` | Lance l'analyse de dette technique interne et/ou externe |
+| Nettoyage des logs | `clean-log` | Lance le module clean-log |
+| Nettoyage du registry | `clean-registry-ghost-image` | Lance le module clean-registry en mode suppression des images « no build » |
+| Nettoyage du registry | `clean-registry-dev-image` | Lance le module clean-registry en mode suppression des images de dev |
 | Scan de code | `scan-code-sonarqube` | Lance l'analyse SonarQube du projet |
 | Détection de secrets | `scan-secret-gitleaks` | Lance la recherche de secrets avec gitleaks |
 | Création d'issue | `create-issue` | Crée les issues Gitlab décrites par les variables `CREATE_ISSUE_ISSUE_*` |
 | Script à la demande | `launch-python-script` | Lance le module Python (ou la commande) défini par `LAUNCH_SCRIPT_MODULE` |
 
 La valeur par défaut de `LAUNCH_FEATURE` est `build-docker,trigger-project,scan-code-sonarqube,scan-secret-gitleaks` : les autres features doivent être ajoutées explicitement (en configuration projet ou ponctuellement via **Run pipeline**), par exemple `LAUNCH_FEATURE: "build-docker,trigger-project,create-issue"`.
+
+Les schedules fixent `LAUNCH_FEATURE` à la seule feature qu'ils lancent (ex : `clean-log` pour le schedule `cleanlog`) : la valeur par défaut est alors remplacée, et ni le build, ni le trigger, ni les scans ne tournent dans ces pipelines. Pour lancer un nettoyage à la main : **Build > Pipelines > Run pipeline** avec `LAUNCH_FEATURE = clean-registry-ghost-image,clean-registry-dev-image` par exemple.
 
 En plus du scan à chaque push, la détection de secrets tourne via un **schedule obligatoire** `scangitleaks` qui scanne tout l'historique de chaque projet tous les 5 jours (voir [docs/modules/GITLEAKS.md](docs/modules/GITLEAKS.md#schedule-obligatoire-scangitleaks)).
 
