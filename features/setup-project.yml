@@ -3,11 +3,12 @@ setup-trigger-project:
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
-    - changes:
-        - "setup/**/*triggers.yml"
     - if: $LAUNCH_FEATURE =~ /setup-trigger-project/
-      when: always
-    - when: never
+    - if: $LAUNCH_FEATURE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "setup/**/*triggers.yml"
   tags:
     - $RUNNER_TAGS
   needs:
@@ -23,11 +24,12 @@ setup-build-project:
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
-    - changes:
-        - "setup/**/*build.yml"
     - if: $LAUNCH_FEATURE =~ /setup-build-project/
-      when: always
-    - when: never
+    - if: $LAUNCH_FEATURE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "setup/**/*build.yml"
   tags:
     - $RUNNER_TAGS
   needs:
@@ -43,11 +45,12 @@ setup-scan-project:
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
-    - changes:
-        - "setup/**/*scan.yml"
     - if: $LAUNCH_FEATURE =~ /setup-scan-project/
-      when: always
-    - when: never
+    - if: $LAUNCH_FEATURE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "setup/**/*scan.yml"
   tags:
     - $RUNNER_TAGS
   needs:
@@ -63,11 +66,12 @@ setup-schedule-project:
   rules:
     - if: $GITLAB_SETUP_MODE == null
       when: never
-    - changes:
-        - "setup/**/*.yml"
     - if: $LAUNCH_FEATURE =~ /setup-schedule-project/
-      when: always
-    - when: never
+    - if: $LAUNCH_FEATURE
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+      changes:
+        - "setup/**/*.yml"
   tags:
     - $RUNNER_TAGS
   needs:
