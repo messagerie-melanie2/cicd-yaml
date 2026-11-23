@@ -530,6 +530,7 @@ variables:
             "variables":
             {
                 "CI_COMMIT_MESSAGE": "[buildall] Daily rebuild - ci-all ci-check-before-push"
+                "LAUNCH_FEATURE": "build-docker"
             }
         },
         "cleanghostimage":
