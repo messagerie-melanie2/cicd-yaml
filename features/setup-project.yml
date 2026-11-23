@@ -5,6 +5,9 @@ setup-trigger-project:
       when: never
     - changes:
         - "setup/**/*triggers.yml"
+    - if: $LAUNCH_FEATURE =~ /setup-trigger-project/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
@@ -22,6 +25,9 @@ setup-build-project:
       when: never
     - changes:
         - "setup/**/*build.yml"
+    - if: $LAUNCH_FEATURE =~ /setup-build-project/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
@@ -39,6 +45,9 @@ setup-scan-project:
       when: never
     - changes:
         - "setup/**/*scan.yml"
+    - if: $LAUNCH_FEATURE =~ /setup-scan-project/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
@@ -56,6 +65,9 @@ setup-schedule-project:
       when: never
     - changes:
         - "setup/**/*.yml"
+    - if: $LAUNCH_FEATURE =~ /setup-schedule-project/
+      when: always
+    - when: never
   tags:
     - $RUNNER_TAGS
   needs:
