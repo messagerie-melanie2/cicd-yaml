@@ -4,8 +4,6 @@ setup-trigger-project:
     - if: $GITLAB_SETUP_MODE == null
       when: never
     - if: $LAUNCH_FEATURE =~ /setup-trigger-project/
-    - if: $LAUNCH_FEATURE
-      when: never
     - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         - "setup/**/*triggers.yml"
@@ -25,8 +23,6 @@ setup-build-project:
     - if: $GITLAB_SETUP_MODE == null
       when: never
     - if: $LAUNCH_FEATURE =~ /setup-build-project/
-    - if: $LAUNCH_FEATURE
-      when: never
     - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         - "setup/**/*build.yml"
@@ -46,8 +42,6 @@ setup-scan-project:
     - if: $GITLAB_SETUP_MODE == null
       when: never
     - if: $LAUNCH_FEATURE =~ /setup-scan-project/
-    - if: $LAUNCH_FEATURE
-      when: never
     - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         - "setup/**/*scan.yml"
@@ -67,8 +61,6 @@ setup-schedule-project:
     - if: $GITLAB_SETUP_MODE == null
       when: never
     - if: $LAUNCH_FEATURE =~ /setup-schedule-project/
-    - if: $LAUNCH_FEATURE
-      when: never
     - if: $CI_PIPELINE_SOURCE == "push"
       changes:
         - "setup/**/*.yml"
