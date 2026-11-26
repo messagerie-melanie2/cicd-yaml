@@ -71,7 +71,8 @@ flowchart LR
     subgraph Scan ["--setup-scan"]
         C1["read_setup_files( *scan.yml )"] --> C2["set_config_path()"]
         C2 --> C3{"'SONARQUBE' in type ?"}
-        C3 -- oui --> C4["set_sonar_scan_ci_variables()<br>écriture de la variable SONAR_TOKEN"]
+        C3 -- oui --> C4["set_sonar_project()<br>API SonarQube : création du projet, branche principale, lien GitLab (ALM)"]
+        C4 --> C5["set_sonar_scan_ci_variables()<br>écriture de la variable SONAR_TOKEN"]
     end
 
     subgraph Schedule ["--setup-schedule"]
@@ -115,7 +116,9 @@ Pour chaque entrée de `*build.yml` :
 Pour chaque entrée de `*scan.yml` :
 
 1. `set_config_path()` — même logique que pour le build et le trigger.
-2. Si le champ `type` de l'entrée contient `"SONARQUBE"` (liste ou chaîne, testé par simple `in`), `set_sonar_scan_ci_variables()` récupère les variables CI/CD existantes du projet puis écrit la variable `SONAR_TOKEN` (nom configurable via `SETUP_SONAR_TOKEN_VARIABLE_NAME`). La valeur écrite est celle de la variable d'environnement de même nom lue sur le job de setup lui-même (`SETUP_SONAR_TOKEN`) : il faut donc que le projet `cicd-configuration` dispose déjà de cette variable (typiquement héritée d'un groupe/instance) pour pouvoir la propager aux projets scannés. Un message est envoyé sur `SETUP_CHANNEL_URL` lors de la première configuration du projet.
+2. Si le champ `type` de l'entrée contient `"SONARQUBE"` (liste ou chaîne, testé par simple `in`) :
+   - `set_sonar_project()` s'adresse à l'instance SonarQube de `SONAR_HOST_URL` (même variable que le job de scan, définie dans `cicd-configuration`), avec le token d'API nommé par `SETUP_SONAR_API_TOKEN_VARIABLE_NAME`. Il vérifie si le projet existe (`api/components/show`, qui ne demande que le droit *Browse*), le crée s'il n'existe pas (`api/projects/create`, branche principale = branche par défaut GitLab), renomme si besoin sa branche principale (`api/project_branches/list` puis `api/project_branches/rename`) et le lie à son dépôt GitLab (`api/alm_settings/set_gitlab_binding` avec l'`id` du projet GitLab, appelé à chaque passage : il crée le lien ou le remplace). L'intégration GitLab est celle de `SETUP_SONAR_ALM_SETTING` (`gitlab` par défaut) ; si cette variable est vide, l'unique intégration GitLab disponible pour le projet (`api/alm_settings/list?project=<clé>`, qui ne demande que le droit *Administer* sur le projet). La clé du projet est le chemin GitLab avec les `/` remplacés par des `:`, ou la valeur de `sonar_project_key` si elle est renseignée ;
+   - `set_sonar_scan_ci_variables()` récupère les variables CI/CD existantes du projet puis écrit la variable `SONAR_TOKEN` (nom fixe). La valeur écrite est celle de la variable lue sur le job de setup lui-même, dont le nom est donné par `SETUP_SONAR_TOKEN_VARIABLE_NAME` (`SETUP_SONAR_TOKEN`) : il faut donc que le projet `cicd-configuration` dispose déjà de cette variable (typiquement héritée d'un groupe/instance) pour pouvoir la propager aux projets scannés. Un message est envoyé sur `SETUP_CHANNEL_URL` lors de la première configuration du projet.
 
 Toute autre valeur de `type` est ignorée : aucun traitement n'est déclenché.
 
@@ -169,13 +172,25 @@ Lit **à la fois** `build.yml` et `triggers.yml`. Pour chaque projet :
 | `SETUP_BUILD_MANDATORY_ALLOWLIST` | `{}` | Instances à ajouter d'office dans l'allowlist de tout projet build (format `{"nom": id}`) |
 | `SETUP_SCAN_FOLDER_PATH` | `setup/` | Dossier parcouru pour trouver les fichiers de setup scan |
 | `SETUP_SCAN_FILE_ENDSWITH` | `scan.yml` | Suffixe identifiant un fichier de setup scan |
-| `SETUP_SONAR_TOKEN_VARIABLE_NAME` | `SONAR_TOKEN` | Nom de la variable CI/CD écrite sur les projets scannés, et nom de la variable d'environnement lue sur le job de setup pour en récupérer la valeur |
+| `SETUP_SONAR_TOKEN_VARIABLE_NAME` | `SONAR_TOKEN` | Nom de la variable lue sur le job de setup (`cicd-configuration`) pour récupérer la valeur du token de scan. La variable écrite sur les projets scannés s'appelle toujours `SONAR_TOKEN` |
+| `SETUP_SONAR_API_TOKEN_VARIABLE_NAME` | `SONAR_API_TOKEN` | Nom de la variable d'environnement contenant le token d'API SonarQube utilisé pour créer et configurer les projets (ex : `SONAR_API_TOKEN_PROD`). L'instance visée est celle de `SONAR_HOST_URL` |
+| `SETUP_SONAR_ALM_SETTING` | `gitlab` | Clé de l'intégration GitLab (DevOps Platform Integration) de l'instance SonarQube. Vide (`""`) : détection automatique s'il n'y en a qu'une disponible pour le projet |
 
 Tous ces paramètres sont surchargeables via la configuration `cicd-configuration/configuration/.default-conf.yml` (voir les valeurs réelles utilisées en production dans ce fichier).
 
 ## Prérequis
 
-- Le projet `cicd-configuration` doit avoir la variable `GITLAB_SETUP_MODE` définie (non nulle) et les variables `CICD_GITLAB_ADMIN_TOKEN`, `CICD_CONFIGURATION_PATH`, `DOCKERHUB_TOKEN`. Pour le scan, la variable `SONAR_TOKEN` (ou le nom défini par `SETUP_SONAR_TOKEN_VARIABLE_NAME`) doit aussi être présente, sans quoi une chaîne vide est propagée aux projets scannés.
+- Le projet `cicd-configuration` doit avoir la variable `GITLAB_SETUP_MODE` définie (non nulle) et les variables `CICD_GITLAB_ADMIN_TOKEN`, `CICD_CONFIGURATION_PATH`, `DOCKERHUB_TOKEN`. Pour le scan, la variable `SONAR_TOKEN` (ou le nom défini par `SETUP_SONAR_TOKEN_VARIABLE_NAME`) doit aussi être présente, sans quoi une chaîne vide est propagée aux projets scannés, ainsi que `SONAR_HOST_URL` et le token d'API SonarQube nommé par `SETUP_SONAR_API_TOKEN_VARIABLE_NAME`.
+- Le compte SonarQube du token d'API doit avoir les droits suivants (le droit *Administer System* n'est pas nécessaire) :
+
+  | Droit | Portée | Utilisé pour |
+  |-------|--------|--------------|
+  | *Create Projects* | Global (instance) | Création des projets (`api/projects/create`) |
+  | *Browse* | Chaque projet | Vérifier si le projet existe (`api/components/show`) |
+  | *Administer* | Chaque projet | Renommer la branche principale (`api/project_branches/rename`) et lier le projet à GitLab (`api/alm_settings/list`, `api/alm_settings/set_gitlab_binding`) |
+
+  Les droits *Browse* et *Administer* sont normalement donnés au créateur du projet par le modèle de permissions par défaut : rien à faire pour les projets créés par le setup. Pour un projet **déjà existant créé par un autre compte**, ces droits doivent être donnés à la main au compte du token, sinon le setup échoue sur ce projet (403 dans les logs).
+- L'instance SonarQube doit avoir une intégration GitLab (*DevOps Platform Integrations*) dont la clé correspond à `SETUP_SONAR_ALM_SETTING` (`gitlab` par défaut) pour que le lien ALM soit fait.
 - Son option *CI/CD configuration file* doit pointer vers `.gitlab-ci.yml@…/cicd-yaml`.
 - Le token `CICD_GITLAB_ADMIN_TOKEN` doit avoir des droits administrateur (modification de `ci_config_path`, création de tokens, gestion des allowlists et schedules sur les projets cibles).
 - Voir [docs/INIT.md](../INIT.md) pour l'initialisation complète.
@@ -186,7 +201,7 @@ Après un commit modifiant les fichiers de `setup/` :
 
 - **trigger** : chaque projet déclencheur reçoit son trigger token, sa variable `TRIGGER_CONFIGURATION` et son `ci_config_path`, et les allowlists croisées sont en place → le module trigger devient opérationnel.
 - **build** : chaque projet reçoit `CICD_API_TOKEN`, `ENABLE_BUILD = yes`, les tokens DockerHub/déploiement, son `ci_config_path` et ses allowlists → le module build-docker devient opérationnel.
-- **scan** : chaque projet listé avec `type: ["SONARQUBE"]` reçoit la variable `SONAR_TOKEN` et son `ci_config_path`. Il reste ensuite à définir `SONAR_HOST_URL`, `sonar-project.properties` et `LAUNCH_FEATURE` sur le projet cible (voir [docs/setup/SCAN_SETUP.md](../setup/SCAN_SETUP.md)) pour que le module scan devienne opérationnel.
+- **scan** : chaque projet listé avec `type: ["SONARQUBE"]` est créé sur l'instance SonarQube de `SONAR_HOST_URL` (branche principale alignée sur GitLab, lien ALM vers son dépôt) et reçoit la variable `SONAR_TOKEN` ainsi que son `ci_config_path`. Il reste ensuite à définir si besoin `sonar-project.properties` et `LAUNCH_FEATURE` sur le projet cible (voir [docs/setup/SCAN_SETUP.md](../setup/SCAN_SETUP.md)) pour que le module scan devienne opérationnel.
 - **schedule** : les schedules de pipeline (nettoyage de logs et scan gitleaks sur tous les projets, rebuild quotidien et nettoyage du registry sur les projets build…) sont créés ou mis à jour sur les projets, avec prise de propriété par le compte de setup.
 
 ---

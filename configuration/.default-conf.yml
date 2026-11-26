@@ -608,9 +608,20 @@ variables:
   ### Default: "triggers.yml"
   #SETUP_SCAN_FILE_ENDSWITH: "scan.yml"
 
-  ### Key name used for storing Sonarqube tokens.
+  ### Key name of the variable (in cicd-configuration) holding the Sonarqube scan token.
+  ### It is always written as SONAR_TOKEN on scanned projects.
   ### Default: "SONAR_TOKEN"
   #SETUP_SONAR_TOKEN_VARIABLE_NAME: "SONAR_TOKEN"
+
+  ### Key name of the Sonarqube API token used to create and configure projects on the SONAR_HOST_URL instance.
+  ### Example: "SONAR_API_TOKEN_PROD" or "SONAR_API_TOKEN_PREPROD"
+  ### Default: "SONAR_API_TOKEN"
+  #SETUP_SONAR_API_TOKEN_VARIABLE_NAME: "SONAR_API_TOKEN"
+
+  ### Key of the GitLab DevOps Platform Integration used to bind projects on Sonarqube.
+  ### Set it to "" to auto-detect it (only if one GitLab integration is available for the project).
+  ### Default: "gitlab"
+  #SETUP_SONAR_ALM_SETTING: "gitlab"
 
   #=============== Trigger Script variables ==============#
 
