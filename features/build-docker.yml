@@ -30,6 +30,7 @@ fill-jsonnet-from-python:
       --generate-jsonnet-branch-name ${CI_COMMIT_BRANCH}
       --generate-jsonnet-pipeline-folder ../${CI_PIPELINE_FOLDER_PATH}
       --changes-info-file ${CHANGES_INFO}
+      --commit-before-sha "${CI_COMMIT_BEFORE_SHA}"
       --project-id ${CI_PROJECT_ID} 
       --token ${CICD_API_TOKEN} 
       --trigger-project ${CI_PROJECT_TRIGGER_CICD} 
